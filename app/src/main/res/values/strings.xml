@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">老鹰期货</string>
+    <string name="tab_followed">自选</string>
+    <string name="tab_market">行情</string>
+    <string name="tab_news">资讯</string>
+    <string name="tab_user">我的</string>
+    <string name="save_pic_success">图片已保存到%1$s</string>
+    <string name="save_pic_failed">图片保存失败:%1$s</string>
+    <string name="launch_app_market_failed">您的手机上未发现应用市场</string>
+    <string name="no_network_hint">无法连接网络，请点击刷新</string>
+    <string name="one_more_exit">再按一次退出</string>
+</resources>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/rl_title"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/default_title_height"
+        android:background="@color/default_title_background_color">
+
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_back"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/tab_news"
+            android:textColor="#333333"
+            android:textSize="@dimen/default_title_text_size" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/default_title_bottom_line_height"
+            android:layout_alignParentBottom="true"
+            android:background="@color/default_title_bottom_line_color" />
+    </RelativeLayout>
+    <com.shuai.futures.view.WebViewWrapper
+        android:id="@+id/webview_wrapper"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+    </com.shuai.futures.view.WebViewWrapper>
+
+</LinearLayout>

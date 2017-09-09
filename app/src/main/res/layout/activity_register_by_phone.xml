@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/default_background_color"
+    android:orientation="vertical" >
+    
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/default_title_height"
+        layout="@layout/default_title_with_back" />
+
+    <LinearLayout
+        android:id="@+id/ll_name"
+        android:layout_width="match_parent"
+        android:layout_height="59dp"
+        android:background="#ffffff"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <ImageView
+            android:layout_width="27dp"
+            android:layout_height="27dp"
+            android:layout_marginLeft="10dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_phone" />
+
+        <com.wiixiaobao.wxb.view.EditTextWithClear
+            android:id="@+id/et_phone"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:ems="10"
+            android:hint="请输入手机号"
+            android:inputType="numberSigned|numberDecimal"
+            android:paddingLeft="3dp"
+            android:singleLine="true"
+            android:textColor="@color/default_text_color"
+            android:textColorHint="#dadada"
+            android:textSize="16sp" >
+
+            <requestFocus />
+        </com.wiixiaobao.wxb.view.EditTextWithClear>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/default_split_line_color" />
+
+    <LinearLayout
+        android:id="@+id/ll_verify_sms"
+        android:layout_width="match_parent"
+        android:layout_height="59dp"
+        android:background="#ffffff"
+        android:orientation="horizontal" >
+
+        <EditText
+            android:id="@+id/et_sms"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:ems="10"
+            android:hint="请输入短信验证码"
+            android:inputType="number"
+            android:paddingLeft="40dp"
+            android:singleLine="true"
+            android:textColor="@color/default_text_color"
+            android:textColorHint="#dadada"
+            android:textSize="16sp" />
+
+        <com.wiixiaobao.wxb.view.GetVerifySmsButton
+            android:id="@+id/btn_get_verify_sms"
+            android:layout_width="112dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="11dp"
+            android:background="@drawable/btn_light_yellow_bg"
+            android:text="获取验证码"
+            android:textColor="#ac8e3d"
+            android:textSize="17sp" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/default_split_line_color" />
+
+    <LinearLayout
+        android:id="@+id/ll_password"
+        android:layout_width="match_parent"
+        android:layout_height="59dp"
+        android:background="#ffffff"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <ImageView
+            android:layout_width="27dp"
+            android:layout_height="27dp"
+            android:layout_marginLeft="10dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_lock" />
+
+        <com.wiixiaobao.wxb.view.EditTextWithClear
+            android:id="@+id/et_password"
+            android:layout_width="match_parent"
+            android:layout_height="59dp"
+            android:background="#ffffff"
+            android:ems="10"
+            android:hint="请输入密码"
+            android:imeOptions="actionDone"
+            android:inputType="textPassword"
+            android:paddingLeft="3dp"
+            android:singleLine="true"
+            android:textColor="@color/default_text_color"
+            android:textColorHint="#dadada"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/default_split_line_color" />
+
+    <Button
+        android:id="@+id/btn_register"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="50dp"
+        android:background="@drawable/btn_red_bg"
+        android:text="完成注册"
+        android:textColor="#ffffff"
+        android:textSize="19sp" />
+
+</LinearLayout>

@@ -4,6 +4,7 @@
     <string name="tab_market">行情</string>
     <string name="tab_news">资讯</string>
     <string name="tab_user">我的</string>
+    <string name="loading_video">正在加载视频...</string>
     <string name="save_pic_success">图片已保存到%1$s</string>
     <string name="save_pic_failed">图片保存失败:%1$s</string>
     <string name="launch_app_market_failed">您的手机上未发现应用市场</string>

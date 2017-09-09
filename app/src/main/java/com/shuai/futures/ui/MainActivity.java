@@ -26,12 +26,14 @@ import com.shuai.futures.data.LoginStateChanged;
 import com.shuai.futures.logic.UserManager;
 import com.shuai.futures.net.ConnectionChangeMonitor;
 import com.shuai.futures.ui.base.BaseFragmentActivity;
+import com.shuai.futures.utils.DisplayUtils;
 import com.shuai.futures.utils.NavigateUtils;
 
 import java.util.ArrayList;
 
 import de.greenrobot.event.EventBus;
 import de.greenrobot.event.Subscribe;
+
 
 public class MainActivity extends BaseFragmentActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -146,7 +148,7 @@ public class MainActivity extends BaseFragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        mContext=this;
+        mContext = this;
         super.onCreate(savedInstanceState);
 
         mRequestQueue = MyApplication.getRequestQueue();
@@ -185,10 +187,10 @@ public class MainActivity extends BaseFragmentActivity {
     @Override
     public void onBackPressed() {
         if (!getSupportFragmentManager().popBackStackImmediate()) {
-            if(System.currentTimeMillis()-mLastBackPressedTime>2000){
-                mLastBackPressedTime=System.currentTimeMillis();
+            if (System.currentTimeMillis() - mLastBackPressedTime > 2000) {
+                mLastBackPressedTime = System.currentTimeMillis();
                 Toast.makeText(mContext, R.string.one_more_exit, Toast.LENGTH_SHORT).show();
-            }else{
+            } else {
                 super.onBackPressed();
             }
         }
@@ -209,11 +211,11 @@ public class MainActivity extends BaseFragmentActivity {
      * 创建maintab
      */
     private void createTabs() {
-        String[] tabIds = { "followed", "market", "news", "user" };
-        int[] titles = { R.string.tab_followed, R.string.tab_market, R.string.tab_news, R.string.tab_user };
-        int[] icons = { R.drawable.tab_followed, R.drawable.tab_market, R.drawable.tab_news, R.drawable.tab_user};
-        Class<?>[] fragments = { FollowedFragment.class, FollowedFragment.class, FollowedFragment.class,
-                FollowedFragment.class };
+        String[] tabIds = {"followed", "market", "news", "user"};
+        int[] titles = {R.string.tab_followed, R.string.tab_market, R.string.tab_news, R.string.tab_user};
+        int[] icons = {R.drawable.tab_followed, R.drawable.tab_market, R.drawable.tab_news, R.drawable.tab_user};
+        Class<?>[] fragments = {FollowedFragment.class, MarketFragment.class, NewsFragment.class,
+                UserFragment.class};
 
         LayoutInflater inflater = getLayoutInflater();
         for (int i = 0; i < tabIds.length; i++) {
@@ -243,12 +245,12 @@ public class MainActivity extends BaseFragmentActivity {
                 mViewPager.setCurrentItem(1);
                 break;
             }
-            case NavigateUtils.TAB_NEWS:{
+            case NavigateUtils.TAB_NEWS: {
                 mViewPager.setCurrentItem(2);
                 break;
             }
             case NavigateUtils.TAB_USER: {
-                if(!isLogined()){
+                if (!isLogined()) {
                     //NavigateUtils.showTab(mContext, NavigateUtils.TAB_MESSAGE);
                     return;
                 }
@@ -275,10 +277,10 @@ public class MainActivity extends BaseFragmentActivity {
     }
 
     @Subscribe
-    public void onEvent(ConnectionChangeMonitor.EventConnectionChange event){
-        if(event.isConnected()){
+    public void onEvent(ConnectionChangeMonitor.EventConnectionChange event) {
+        if (event.isConnected()) {
             //发现连上网，自动登录
-            if(!UserManager.getInstance().isLogined())
+            if (!UserManager.getInstance().isLogined())
                 UserManager.getInstance().autoLogin();
         }
     }

@@ -7,3 +7,5 @@
 /build
 /captures
 .externalNativeBuild
+/pullToRefresh/build
+/viewPagerIndicator/build

@@ -22,6 +22,7 @@ android {
 
 dependencies {
     compile project(':pullToRefresh')
+    compile project(':viewPagerIndicator')
     compile fileTree(dir: 'libs', include: ['*.jar'])
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
@@ -32,6 +33,7 @@ dependencies {
     compile 'com.github.PhilJay:MPAndroidChart:v3.0.2'
     compile 'com.umeng.analytics:analytics:latest.integration'
     compile 'com.google.code.gson:gson:2.3.1'
+
     compile files('libs/commons-io-2.4.jar')
     compile files('libs/AndroidViewAnimations-1.1.3.jar')
     compile files('libs/universal-image-loader-1.9.4.jar')

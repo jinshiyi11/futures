@@ -15,6 +15,7 @@ import com.google.gson.reflect.TypeToken;
 import com.shuai.futures.data.Constants;
 import com.shuai.futures.data.FuturesInfo;
 import com.shuai.futures.data.KlineItem;
+import com.shuai.futures.ui.KlineChartFragment;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -30,12 +31,29 @@ import java.util.List;
 public class GetFuturesDailyKlineTask extends BaseTask<List<KlineItem>> {
     private static final String TAG = GetFuturesDailyKlineTask.class.getSimpleName();
 
-    public GetFuturesDailyKlineTask(Context context, String futureId, Listener<List<KlineItem>> listener, Response.ErrorListener errorListener) {
-        super(Method.GET, getUrl(futureId), null, listener, errorListener);
+    public GetFuturesDailyKlineTask(Context context, String futureId, KlineChartFragment.KlineChartType klineType, Listener<List<KlineItem>> listener, Response.ErrorListener errorListener) {
+        super(Method.GET, getUrl(futureId,klineType), null, listener, errorListener);
     }
 
-    private static String getUrl(String futureId) {
-        StringBuilder url = new StringBuilder("http://stock2.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesDailyKLine?symbol=");
+    private static String getUrl(String futureId, KlineChartFragment.KlineChartType klineType) {
+        StringBuilder url = null;
+        switch (klineType){
+            case K5Minutes:
+                url = new StringBuilder("http://stock2.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesMiniKLine5m?symbol=");
+                break;
+            case K15Minutes:
+                url = new StringBuilder("http://stock2.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesMiniKLine15m?symbol=");
+                break;
+            case K30Minutes:
+                url = new StringBuilder("http://stock2.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesMiniKLine30m?symbol=");
+                break;
+            case K60Minutes:
+                url = new StringBuilder("http://stock2.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesMiniKLine60m?symbol=");
+                break;
+            case KDaily:
+                url = new StringBuilder("http://stock2.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesDailyKLine?symbol=");
+                break;
+        }
         url.append(futureId);
         return url.toString();
     }

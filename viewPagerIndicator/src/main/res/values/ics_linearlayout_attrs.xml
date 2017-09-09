@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="IcsLinearLayout">
+        <attr name="divider" format="reference"></attr>
+        <attr name="dividerPadding" format="dimension"></attr>
+        <attr name="xshowDividers">
+            <flag name="none" value="0" />
+            <flag name="beginning" value="1" />
+            <flag name="middle" value="2" />
+            <flag name="end" value="4" />
+        </attr>
+    </declare-styleable>
+    
+</resources>

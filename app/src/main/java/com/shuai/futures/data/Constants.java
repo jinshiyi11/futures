@@ -12,7 +12,7 @@ public class Constants {
     /**
      * 是使用线上服务还是开发环境的服务
      */
-    public static boolean SERVER_ONLINE = false;
+    public static boolean SERVER_ONLINE = true;
 
     public static final String SERVER_ADDRESS;
 

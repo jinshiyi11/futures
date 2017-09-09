@@ -2,10 +2,12 @@ package com.shuai.futures.ui;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -13,20 +15,13 @@ import android.widget.TextView;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.charts.CandleStickChart;
-import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.data.BarData;
-import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.CandleData;
-import com.github.mikephil.charting.data.CandleDataSet;
 import com.github.mikephil.charting.data.CandleEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.shuai.futures.MyApplication;
 import com.shuai.futures.R;
@@ -38,8 +33,18 @@ import com.shuai.futures.data.LoadingStatus;
 import com.shuai.futures.protocol.GetFuturesDailyKlineTask;
 import com.shuai.futures.protocol.GetFuturesPriceListTask;
 import com.shuai.futures.protocol.ProtocolUtils;
+import com.shuai.futures.ui.base.BaseFragment;
 import com.shuai.futures.ui.base.BaseFragmentActivity;
 import com.shuai.futures.utils.Utils;
+import com.shuai.futures.view.chart.CoupleChartGestureListener;
+import com.shuai.futures.view.chart.MyBarChart;
+import com.shuai.futures.view.chart.MyBarDataSet;
+import com.shuai.futures.view.chart.MyCandleChart;
+import com.shuai.futures.view.chart.MyCandleDataSet;
+import com.shuai.futures.view.chart.MyLineChart;
+import com.shuai.futures.view.chart.MyLineDataSet;
+import com.viewpagerindicator.TabPageIndicatorEx;
+import com.viewpagerindicator.TabViewInterface;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +52,6 @@ import java.util.List;
 /**
  *
  */
-
 public class CandleStickActivity extends BaseFragmentActivity {
     private Context mContext;
     private String mFuturesId;
@@ -59,14 +63,9 @@ public class CandleStickActivity extends BaseFragmentActivity {
     private ViewGroup mLoadingContainer;
     private ViewGroup mMainContainer;
     private TextView mTvTitle;
-    private LineChart mRealTimeChart;
-    private XAxis mXAxis;
-    private YAxis mLeftAxis;
-    private YAxis mRightAxis;
+    private ViewPager mViewPager;
 
-    private BarChart mVolumeChart;
-
-    private CandleStickChart mCandelStickChart;
+    private static final String[] TAB_TITLES = new String[]{"分时", "5分", "15分", "30分", "60分", "日K"};
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -91,131 +90,34 @@ public class CandleStickActivity extends BaseFragmentActivity {
             public void onClick(View v) {
                 setStatus(LoadingStatus.STATUS_LOADING);
                 getFuturesPrice();
-                getDailyKlineInfo();
             }
         });
 
-        mRealTimeChart = (LineChart) findViewById(R.id.chart_realtime);
-        mRealTimeChart.setNoDataText(null);
-        mRealTimeChart.setDescription(null);
-        mRealTimeChart.getLegend().setEnabled(false);
-        mRealTimeChart.setDrawBorders(true);
-        mRealTimeChart.setBorderColor(0xffcfd5e0);
-        mRealTimeChart.setBorderWidth(1);
-        mXAxis = mRealTimeChart.getXAxis();
-        mLeftAxis = mRealTimeChart.getAxisLeft();
-        mRightAxis = mRealTimeChart.getAxisRight();
-        mXAxis.setLabelCount(3, true);
-        mXAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        mLeftAxis.setLabelCount(3, true);
-        mLeftAxis.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
-        mRightAxis.setLabelCount(3, true);
+        mViewPager = (ViewPager) findViewById(R.id.pager);
+        FragmentPagerAdapter adapter = new OrderTabAdapter(
+                getSupportFragmentManager());
+        mViewPager.setOffscreenPageLimit(TAB_TITLES.length);
+        mViewPager.setAdapter(adapter);
+        TabPageIndicatorEx indicator = (TabPageIndicatorEx) findViewById(R.id.tbi_order);
 
-        List<Entry> entries = new ArrayList<Entry>();
-        entries.add(new Entry(1, 10));
-        entries.add(new Entry(2, 10.6f));
-        entries.add(new Entry(3, 19));
-        entries.add(new Entry(5, 3));
-        entries.add(new Entry(60, 5));
-
-        mXAxis.setAxisMinimum(1);
-        mXAxis.setAxisMaximum(100);
-
-        LineDataSet dataSet = new LineDataSet(entries, "Label"); // add entries to dataset
-//        dataSet.setColor(...);
-//        dataSet.setValueTextColor(...); // styling, ...
-        dataSet.setDrawCircleHole(false);
-        dataSet.setDrawCircles(false);
-        dataSet.setDrawValues(false);
-        dataSet.setLineWidth(2);
-        dataSet.setColor(0xff3b7fed);
-        dataSet.setFillColor(0xffe2ecfc);
-        dataSet.setDrawFilled(true);
-        LineData lineData = new LineData(dataSet);
-        mRealTimeChart.setData(lineData);
-        //mRealTimeChart.invalidate(); // refresh
-
-
-        mVolumeChart = (BarChart) findViewById(R.id.chart_volume);
-        mVolumeChart.setNoDataText(null);
-        mVolumeChart.setDescription(null);
-        mVolumeChart.getLegend().setEnabled(false);
-        mVolumeChart.getXAxis().setEnabled(false);
-        ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
-        yVals1.add(new BarEntry(1, 100));
-        yVals1.add(new BarEntry(2, 40));
-        yVals1.add(new BarEntry(5, 12));
-        yVals1.add(new BarEntry(8, 342));
-        yVals1.add(new BarEntry(11, 23));
-        yVals1.add(new BarEntry(16, 65));
-        BarDataSet set1 = new BarDataSet(yVals1, "The year 2017");
-        ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
-        dataSets.add(set1);
-
-        BarData data = new BarData(dataSets);
-        data.setDrawValues(false);
-//        data.setValueTextSize(10f);
-//        data.setValueTypeface(mTfLight);
-//        data.setBarWidth(0.9f);
-
-        mVolumeChart.setData(data);
-
-        mCandelStickChart = (CandleStickChart) findViewById(R.id.chart_candlestick);
-        mCandelStickChart.setNoDataText(null);
-        mCandelStickChart.setDescription(null);
-        mCandelStickChart.getLegend().setEnabled(false);
-        mCandelStickChart.setScaleEnabled(false);
-        mCandelStickChart.setPinchZoom(false);
-        mCandelStickChart.setDrawBorders(true);
-        mCandelStickChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
-        mCandelStickChart.getXAxis().setLabelCount(4);
-        mCandelStickChart.getAxisRight().setEnabled(false);
-        mCandelStickChart.getAxisLeft().setLabelCount(3);
-        ArrayList<CandleEntry> candleEntries = new ArrayList<CandleEntry>();
-
-        for (int i = 0; i < 30; i++) {
-            float mult = 5;
-            float val = (float) (Math.random() * 40) + mult;
-
-            float high = (float) (Math.random() * 9) + 8f;
-            float low = (float) (Math.random() * 9) + 8f;
-
-            float open = (float) (Math.random() * 6) + 1f;
-            float close = (float) (Math.random() * 6) + 1f;
-
-            boolean even = i % 2 == 0;
-
-            candleEntries.add(new CandleEntry(
-                    i, val + high,
-                    val - low,
-                    even ? val + open : val - open,
-                    even ? val - close : val + close
-            ));
-        }
-
-        CandleDataSet candleDataset = new CandleDataSet(candleEntries, "Data Set");
-
-        candleDataset.setShadowColorSameAsCandle(true);
-        candleDataset.setDrawIcons(false);
-        candleDataset.setAxisDependency(YAxis.AxisDependency.LEFT);
-//        set1.setColor(Color.rgb(80, 80, 80));
-        candleDataset.setShadowColor(Color.DKGRAY);
-        candleDataset.setShadowWidth(0.7f);
-        candleDataset.setDecreasingColor(Color.RED);
-        candleDataset.setDecreasingPaintStyle(Paint.Style.FILL);
-        candleDataset.setIncreasingColor(Color.rgb(122, 242, 84));
-        candleDataset.setIncreasingPaintStyle(Paint.Style.STROKE);
-        candleDataset.setNeutralColor(Color.BLUE);
-        //set1.setHighlightLineWidth(1f);
-
-        CandleData candleData = new CandleData(candleDataset);
-
-        mCandelStickChart.setData(candleData);
-        mCandelStickChart.invalidate();
+        indicator.setViewPager(mViewPager);
+//        indicator.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+//
+//            @Override
+//            public void onPageSelected(int tab) {
+//            }
+//
+//            @Override
+//            public void onPageScrolled(int arg0, float arg1, int arg2) {
+//            }
+//
+//            @Override
+//            public void onPageScrollStateChanged(int arg0) {
+//            }
+//        });
 
         setStatus(LoadingStatus.STATUS_LOADING);
         getFuturesPrice();
-        getDailyKlineInfo();
     }
 
     @Override
@@ -283,70 +185,40 @@ public class CandleStickActivity extends BaseFragmentActivity {
         mRequestQueue.add(request);
     }
 
-    private void getDailyKlineInfo() {
-        GetFuturesDailyKlineTask request = new GetFuturesDailyKlineTask(mContext, mFuturesId, new Response.Listener<List<KlineItem>>() {
+    class OrderTabAdapter extends FragmentPagerAdapter implements
+            TabViewInterface {
 
-            @Override
-            public void onResponse(List<KlineItem> klineItemList) {
-                ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
-                for (int i = 0; i < klineItemList.size(); i++) {
-                    yVals1.add(new BarEntry(i, klineItemList.get(i).mVolume));
-                }
-                BarDataSet set1 = new BarDataSet(yVals1, "");
-                ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
-                dataSets.add(set1);
+        public OrderTabAdapter(FragmentManager fm) {
+            super(fm);
+        }
 
-                BarData data = new BarData(dataSets);
-                data.setDrawValues(false);
-//        data.setValueTextSize(10f);
-//        data.setValueTypeface(mTfLight);
-//        data.setBarWidth(0.9f);
-
-                mVolumeChart.setData(data);
-                mVolumeChart.invalidate();
-
-
-                ArrayList<CandleEntry> candleEntries = new ArrayList<CandleEntry>();
-                for (int i = 0; i < klineItemList.size(); i++) {
-                    KlineItem item = klineItemList.get(i);
-                    candleEntries.add(new CandleEntry(
-                            i, (float) item.mHigh,
-                            (float) item.mLow,
-                            (float) item.mOpen,
-                            (float) item.mClose
-                    ));
-                }
-
-                CandleDataSet candleDataset = new CandleDataSet(candleEntries, "Data Set");
-
-                candleDataset.setShadowColorSameAsCandle(true);
-                candleDataset.setDrawIcons(false);
-                candleDataset.setAxisDependency(YAxis.AxisDependency.LEFT);
-//        set1.setColor(Color.rgb(80, 80, 80));
-                candleDataset.setShadowColor(Color.DKGRAY);
-                candleDataset.setShadowWidth(0.7f);
-                candleDataset.setDecreasingColor(Color.RED);
-                candleDataset.setDecreasingPaintStyle(Paint.Style.FILL);
-                candleDataset.setIncreasingColor(Color.rgb(122, 242, 84));
-                candleDataset.setIncreasingPaintStyle(Paint.Style.STROKE);
-                candleDataset.setNeutralColor(Color.BLUE);
-                //set1.setHighlightLineWidth(1f);
-
-                CandleData candleData = new CandleData(candleDataset);
-
-                mCandelStickChart.setData(candleData);
-                mCandelStickChart.invalidate();
-
+        @Override
+        public Fragment getItem(int position) {
+            BaseFragment f;
+            if (position == 0) {
+                f = new TimeChartFragment();
+            } else {
+                f = new KlineChartFragment(KlineChartFragment.KlineChartType.values()[position-1]);
             }
-        }, new Response.ErrorListener() {
+            return f;
+        }
 
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Utils.showShortToast(mContext, ProtocolUtils.getErrorInfo(error).getErrorMessage());
-            }
-        });
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return TAB_TITLES[position % TAB_TITLES.length];
+        }
 
-        request.setTag(this);
-        mRequestQueue.add(request);
+        @Override
+        public int getCount() {
+            return TAB_TITLES.length;
+        }
+
+        @Override
+        public View getTabView(ViewGroup container, int position) {
+            TextView tvTab = (TextView) getLayoutInflater().inflate(R.layout.tab_kline,
+                    container, false);
+            tvTab.setText(getPageTitle(position));
+            return tvTab;
+        }
     }
 }

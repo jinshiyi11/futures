@@ -221,7 +221,7 @@ public class WebViewWrapper extends FrameLayout implements OnClickListener {
          public void onProgressChanged(WebView view, int newProgress) {
         	 ((Activity) mContext).getWindow().setFeatureInt(Window.FEATURE_PROGRESS, newProgress*100);
 
-        	 if(!mLoaded && newProgress>95 && mLoadingContainer.getVisibility()== View.VISIBLE){
+        	 if(!mLoaded && newProgress>50 && mLoadingContainer.getVisibility()== View.VISIBLE){
         		 mMainContainer.setVisibility(View.VISIBLE);
                  mLoadingContainer.setVisibility(View.GONE);
                  mNoNetworkContainer.setVisibility(View.GONE);

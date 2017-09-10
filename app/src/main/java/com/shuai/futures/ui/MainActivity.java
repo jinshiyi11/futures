@@ -215,7 +215,7 @@ public class MainActivity extends BaseFragmentActivity {
         int[] titles = {R.string.tab_followed, R.string.tab_market, R.string.tab_news, R.string.tab_user};
         int[] icons = {R.drawable.tab_followed, R.drawable.tab_market, R.drawable.tab_news, R.drawable.tab_user};
         Class<?>[] fragments = {FollowedFragment.class, MarketFragment.class, NewsFragment.class,
-                UserFragment.class};
+                UserCenterFragment.class};
 
         LayoutInflater inflater = getLayoutInflater();
         for (int i = 0; i < tabIds.length; i++) {

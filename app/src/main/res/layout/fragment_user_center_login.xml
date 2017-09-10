@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" >
+
+        <Button
+            android:id="@+id/btn_register"
+            android:layout_width="118dp"
+            android:layout_height="42dp"
+            android:background="@drawable/btn_gray_bg"
+            android:text="注册"
+            android:textColor="#666666"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/btn_login"
+            android:layout_width="118dp"
+            android:layout_height="42dp"
+            android:layout_marginLeft="22dp"
+            android:background="@drawable/btn_red_bg"
+            android:text="登录"
+            android:textColor="#ffffff"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_real_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/linearLayout1"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="38dp"
+        android:gravity="center"
+        android:text="登陆之后尽享超值服务"
+        android:textColor="#beaca4"
+        android:textSize="16sp" />
+
+</RelativeLayout>

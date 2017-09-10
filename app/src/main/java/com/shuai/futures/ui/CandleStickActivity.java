@@ -15,34 +15,17 @@ import android.widget.TextView;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.github.mikephil.charting.charts.Chart;
-import com.github.mikephil.charting.data.BarData;
-import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.CandleData;
-import com.github.mikephil.charting.data.CandleEntry;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.shuai.futures.MyApplication;
 import com.shuai.futures.R;
 import com.shuai.futures.data.Constants;
 import com.shuai.futures.data.FuturesInfo;
 import com.shuai.futures.data.FuturesPrice;
-import com.shuai.futures.data.KlineItem;
 import com.shuai.futures.data.LoadingStatus;
-import com.shuai.futures.protocol.GetFuturesDailyKlineTask;
 import com.shuai.futures.protocol.GetFuturesPriceListTask;
 import com.shuai.futures.protocol.ProtocolUtils;
 import com.shuai.futures.ui.base.BaseFragment;
 import com.shuai.futures.ui.base.BaseFragmentActivity;
 import com.shuai.futures.utils.Utils;
-import com.shuai.futures.view.chart.CoupleChartGestureListener;
-import com.shuai.futures.view.chart.MyBarChart;
-import com.shuai.futures.view.chart.MyBarDataSet;
-import com.shuai.futures.view.chart.MyCandleChart;
-import com.shuai.futures.view.chart.MyCandleDataSet;
-import com.shuai.futures.view.chart.MyLineChart;
-import com.shuai.futures.view.chart.MyLineDataSet;
 import com.viewpagerindicator.TabPageIndicatorEx;
 import com.viewpagerindicator.TabViewInterface;
 
@@ -196,7 +179,7 @@ public class CandleStickActivity extends BaseFragmentActivity {
         public Fragment getItem(int position) {
             BaseFragment f;
             if (position == 0) {
-                f = new TimeChartFragment();
+                f = new TimeLineChartFragment();
             } else {
                 f = new KlineChartFragment(KlineChartFragment.KlineChartType.values()[position-1]);
             }

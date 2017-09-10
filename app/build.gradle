@@ -39,6 +39,7 @@ dependencies {
     compile files('libs/universal-image-loader-1.9.4.jar')
     compile files('libs/volley.jar')
     compile files('libs/disklrucache-2.0.2.jar')
+    compile files('libs/nineoldandroids-2.4.0.jar')
 
     testCompile 'junit:junit:4.12'
 }

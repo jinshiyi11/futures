@@ -11,50 +11,39 @@ import com.android.volley.VolleyError;
 import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.CandleData;
-import com.github.mikephil.charting.data.CandleEntry;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.shuai.futures.MyApplication;
 import com.shuai.futures.R;
 import com.shuai.futures.data.Constants;
-import com.shuai.futures.data.KlineItem;
-import com.shuai.futures.protocol.GetFuturesDailyKlineTask;
+import com.shuai.futures.data.TimeLineItem;
+import com.shuai.futures.protocol.GetTimeLineTask;
 import com.shuai.futures.protocol.ProtocolUtils;
 import com.shuai.futures.ui.base.BaseTabFragment;
 import com.shuai.futures.utils.Utils;
 import com.shuai.futures.view.chart.CoupleChartGestureListener;
 import com.shuai.futures.view.chart.MyBarChart;
 import com.shuai.futures.view.chart.MyBarDataSet;
-import com.shuai.futures.view.chart.MyCandleChart;
-import com.shuai.futures.view.chart.MyCandleDataSet;
+import com.shuai.futures.view.chart.MyLineChart;
+import com.shuai.futures.view.chart.MyLineDataSet;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * 分时图
  */
-
-public class KlineChartFragment extends BaseTabFragment {
+public class TimeLineChartFragment extends BaseTabFragment {
     private RequestQueue mRequestQueue;
     private String mFuturesId;
     private String mFuturesName;
 
-    private MyCandleChart mCandelStickChart;
+    private MyLineChart mTimeLineChart;
     private MyBarChart mVolumeChart;
-    private KlineChartType mKlineType;
 
-    public enum KlineChartType {
-        K5Minutes,
-        K15Minutes,
-        K30Minutes,
-        K60Minutes,
-        KDaily
-    }
-
-    public KlineChartFragment(KlineChartType klineType) {
-        super(R.layout.fragment_kline_chart);
-        mKlineType = klineType;
+    public TimeLineChartFragment() {
+        super(R.layout.fragment_time_chart);
     }
 
     @Override
@@ -65,11 +54,10 @@ public class KlineChartFragment extends BaseTabFragment {
         mFuturesName = intent.getStringExtra(Constants.EXTRA_FUTURES_NAME);
 
 
-
-        mCandelStickChart = (MyCandleChart) root.findViewById(R.id.chart_candlestick);
+        mTimeLineChart = (MyLineChart) root.findViewById(R.id.chart_realtime);
         mVolumeChart = (MyBarChart) root.findViewById(R.id.chart_volume);
 
-        getDailyKlineInfo();
+        getTimeLineInfo();
     }
 
     @Override
@@ -80,30 +68,24 @@ public class KlineChartFragment extends BaseTabFragment {
         super.onDestroyView();
     }
 
-    private void getDailyKlineInfo() {
-        GetFuturesDailyKlineTask request = new GetFuturesDailyKlineTask(mContext, mFuturesId,mKlineType, new Response.Listener<List<KlineItem>>() {
+    private void getTimeLineInfo() {
+        GetTimeLineTask request=new GetTimeLineTask(mContext,mFuturesId,new Response.Listener<List<TimeLineItem>>(){
 
             @Override
-            public void onResponse(List<KlineItem> klineItemList) {
-                ArrayList<CandleEntry> candleEntries = new ArrayList<CandleEntry>();
-                for (int i = 0; i < klineItemList.size(); i++) {
-                    KlineItem item = klineItemList.get(i);
-                    candleEntries.add(new CandleEntry(
-                            i, (float) item.mHigh,
-                            (float) item.mLow,
-                            (float) item.mOpen,
-                            (float) item.mClose
-                    ));
+            public void onResponse(List<TimeLineItem> timeLineItemList) {
+                List<Entry> entries = new ArrayList<Entry>();
+                for (int i = 0; i < timeLineItemList.size(); i++) {
+                    TimeLineItem item = timeLineItemList.get(i);
+                    entries.add(new Entry(i, (float) item.mCurrentPrice, item));
                 }
-                MyCandleDataSet candleDataset = new MyCandleDataSet(mContext, candleEntries, "Data Set");
-                CandleData candleData = new CandleData(candleDataset);
-                mCandelStickChart.setData(candleData);
-                mCandelStickChart.setVisibleXRangeMaximum(60);
-                mCandelStickChart.invalidate();
+                MyLineDataSet dataSet = new MyLineDataSet(entries, "Label"); // add entries to dataset
+                LineData lineData = new LineData(dataSet);
+                mTimeLineChart.setData(lineData);
+                mTimeLineChart.invalidate();
 
                 ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
-                for (int i = 0; i < klineItemList.size(); i++) {
-                    KlineItem item = klineItemList.get(i);
+                for (int i = 0; i < timeLineItemList.size(); i++) {
+                    TimeLineItem item = timeLineItemList.get(i);
                     yVals1.add(new BarEntry(i, item.mVolume, item));
                 }
                 MyBarDataSet set1 = new MyBarDataSet(yVals1, "");
@@ -112,17 +94,14 @@ public class KlineChartFragment extends BaseTabFragment {
                 dataSets.add(set1);
                 BarData data = new BarData(dataSets);
                 mVolumeChart.setData(data);
-                //TODO:setVisibleXRangeMaximum封装到控件里面
-                mVolumeChart.setVisibleXRangeMaximum(60);
                 mVolumeChart.invalidate();
 
-                mCandelStickChart.setOnChartGestureListener(new CoupleChartGestureListener(
-                        mCandelStickChart, new Chart[]{mVolumeChart}));
+                mTimeLineChart.setOnChartGestureListener(new CoupleChartGestureListener(
+                        mTimeLineChart, new Chart[]{mVolumeChart}));
                 mVolumeChart.setOnChartGestureListener(new CoupleChartGestureListener(
-                        mVolumeChart, new Chart[]{mCandelStickChart}));
-
+                        mVolumeChart, new Chart[]{mTimeLineChart}));
             }
-        }, new Response.ErrorListener() {
+        },new Response.ErrorListener(){
 
             @Override
             public void onErrorResponse(VolleyError error) {

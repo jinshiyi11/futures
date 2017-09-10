@@ -45,6 +45,7 @@ public class MyLineChart extends LineChart {
         axisLeft.setLabelCount(3, true);
         axisLeft.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
         axisRight.setLabelCount(3, true);
+        axisRight.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
 
         setMinOffset(0);
         setAutoScaleMinMaxEnabled(true);

@@ -25,7 +25,7 @@
             android:scaleType="fitCenter"
             android:src="@drawable/ic_phone" />
 
-        <com.wiixiaobao.wxb.view.EditTextWithClear
+        <com.shuai.futures.view.EditTextWithClear
             android:id="@+id/et_phone"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -41,7 +41,7 @@
             android:textSize="16sp" >
 
             <requestFocus />
-        </com.wiixiaobao.wxb.view.EditTextWithClear>
+        </com.shuai.futures.view.EditTextWithClear>
     </LinearLayout>
 
     <View
@@ -71,7 +71,7 @@
             android:textColorHint="#dadada"
             android:textSize="16sp" />
 
-        <com.wiixiaobao.wxb.view.GetVerifySmsButton
+        <com.shuai.futures.view.GetVerifySmsButton
             android:id="@+id/btn_get_verify_sms"
             android:layout_width="112dp"
             android:layout_height="40dp"
@@ -103,7 +103,7 @@
             android:scaleType="fitCenter"
             android:src="@drawable/ic_lock" />
 
-        <com.wiixiaobao.wxb.view.EditTextWithClear
+        <com.shuai.futures.view.EditTextWithClear
             android:id="@+id/et_password"
             android:layout_width="match_parent"
             android:layout_height="59dp"

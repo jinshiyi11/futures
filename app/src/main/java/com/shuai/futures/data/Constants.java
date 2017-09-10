@@ -31,6 +31,16 @@ public class Constants {
 
     public static final int PROTOCOL_VERSION = 1;
 
+    /**
+     * 因为注册和找回密码很相似，所以使用同一activity实现，通过该参数控制是显示注册页面还是找回密码页面
+     */
+    public static final String EXTRA_IS_FIND_APSSWORD="extra_is_find_password";
+
+    /**
+     * 注册和修改也共用同一个界面
+     */
+    public static final String EXTRA_IS_MODIFY_APSSWORD="extra_is_modify_password";
+
     static {
         if (!SERVER_ONLINE) {
             SERVER_ADDRESS = "http://192.168.1.102:8080";

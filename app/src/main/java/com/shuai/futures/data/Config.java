@@ -36,4 +36,12 @@ public class Config {
     public void saveConfig() {
 
     }
+
+    public String getVerifyCodeRegex() {
+        return "测试 验证码：(\\d{4})";
+    }
+
+    public String getLastLogoutAccount() {
+        return null;
+    }
 }

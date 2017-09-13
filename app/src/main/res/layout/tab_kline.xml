@@ -4,6 +4,7 @@
     android:layout_width="0dp"
     android:layout_height="match_parent"
     android:gravity="center"
+    android:background="@drawable/tab_message_bg"
     android:textColor="@color/default_text_color"
     android:textSize="16sp" >
 

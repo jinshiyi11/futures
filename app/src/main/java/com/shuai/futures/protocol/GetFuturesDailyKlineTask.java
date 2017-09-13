@@ -35,6 +35,12 @@ public class GetFuturesDailyKlineTask extends BaseTask<List<KlineItem>> {
         super(Method.GET, getUrl(futureId,klineType), null, listener, errorListener);
     }
 
+    /**
+     * http://stock2.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesDailyKLine?symbol=M0
+     * @param futureId
+     * @param klineType
+     * @return
+     */
     private static String getUrl(String futureId, KlineChartFragment.KlineChartType klineType) {
         StringBuilder url = null;
         switch (klineType){

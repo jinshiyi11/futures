@@ -5,6 +5,15 @@
     <color name="colorAccent">#FF4081</color>
     <color name="up">#d0402d</color>
     <color name="down">#17b03e</color>
+    <color name="chart_label">#9d9d9d</color>
+    <color name="chart_border">#cfd5e0</color>
+    <color name="chart_base_line">#cfd5e0</color>
+
+    <color name="chart_ma5">#cd4343</color>
+    <color name="chart_ma10">#8c3037</color>
+    <color name="chart_ma20">#ffca53</color>
+    <color name="chart_ma30">#0055a2</color>
+
     <color name="divider">#dadada</color>
     <color name="item_pressed">#cceeeeee</color>
 

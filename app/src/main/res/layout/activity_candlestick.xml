@@ -178,17 +178,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="32dp"
                 android:layout_marginBottom="5dp"
-                android:layout_marginLeft="6dp"
-                android:layout_marginRight="6dp"
                 android:layout_marginTop="5dp" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/default_title_bottom_line_height"
-                android:background="@color/default_split_line_color" />
         </LinearLayout>
 
-        <android.support.v4.view.ViewPager
+        <com.shuai.futures.view.ViewPagerEx
             android:id="@+id/pager"
             android:layout_width="match_parent"
             android:layout_height="262dp"

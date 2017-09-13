@@ -13,6 +13,7 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.CandleData;
 import com.github.mikephil.charting.data.CandleEntry;
+import com.github.mikephil.charting.data.CombinedData;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.shuai.futures.MyApplication;
 import com.shuai.futures.R;
@@ -25,8 +26,8 @@ import com.shuai.futures.utils.Utils;
 import com.shuai.futures.view.chart.CoupleChartGestureListener;
 import com.shuai.futures.view.chart.MyBarChart;
 import com.shuai.futures.view.chart.MyBarDataSet;
-import com.shuai.futures.view.chart.MyCandleChart;
 import com.shuai.futures.view.chart.MyCandleDataSet;
+import com.shuai.futures.view.chart.MyCombinedChart;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,11 +37,12 @@ import java.util.List;
  */
 
 public class KlineChartFragment extends BaseTabFragment {
+    public static final String  KEY_KLINE_CHART_TYPE="key_kline_chart_type";
     private RequestQueue mRequestQueue;
     private String mFuturesId;
     private String mFuturesName;
 
-    private MyCandleChart mCandelStickChart;
+    private MyCombinedChart mKlineChart;
     private MyBarChart mVolumeChart;
     private KlineChartType mKlineType;
 
@@ -52,9 +54,9 @@ public class KlineChartFragment extends BaseTabFragment {
         KDaily
     }
 
-    public KlineChartFragment(KlineChartType klineType) {
+    public KlineChartFragment() {
         super(R.layout.fragment_kline_chart);
-        mKlineType = klineType;
+
     }
 
     @Override
@@ -63,10 +65,11 @@ public class KlineChartFragment extends BaseTabFragment {
         Intent intent = getActivity().getIntent();
         mFuturesId = intent.getStringExtra(Constants.EXTRA_FUTURES_ID);
         mFuturesName = intent.getStringExtra(Constants.EXTRA_FUTURES_NAME);
+        mKlineType = (KlineChartType) getArguments().getSerializable(KEY_KLINE_CHART_TYPE);
 
 
 
-        mCandelStickChart = (MyCandleChart) root.findViewById(R.id.chart_candlestick);
+        mKlineChart = (MyCombinedChart) root.findViewById(R.id.chart_kline);
         mVolumeChart = (MyBarChart) root.findViewById(R.id.chart_volume);
 
         getDailyKlineInfo();
@@ -95,18 +98,21 @@ public class KlineChartFragment extends BaseTabFragment {
                             (float) item.mClose
                     ));
                 }
+                CombinedData combinedData=new CombinedData();
                 MyCandleDataSet candleDataset = new MyCandleDataSet(mContext, candleEntries, "Data Set");
                 CandleData candleData = new CandleData(candleDataset);
-                mCandelStickChart.setData(candleData);
-                mCandelStickChart.setVisibleXRangeMaximum(60);
-                mCandelStickChart.invalidate();
+                combinedData.setData(candleData);
+                mKlineChart.setData(combinedData);
+                mKlineChart.setVisibleXRangeMaximum(60);
+                mKlineChart.moveViewToX(klineItemList.size());
+                mKlineChart.invalidate();
 
                 ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
                 for (int i = 0; i < klineItemList.size(); i++) {
                     KlineItem item = klineItemList.get(i);
-                    yVals1.add(new BarEntry(i, item.mVolume, item));
+                    yVals1.add(new BarEntry(i, item.mVolume, item.mClose>=item.mOpen));
                 }
-                MyBarDataSet set1 = new MyBarDataSet(yVals1, "");
+                MyBarDataSet set1 = new MyBarDataSet(mContext,yVals1, "");
                 set1.setDrawValues(false);
                 ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
                 dataSets.add(set1);
@@ -114,12 +120,13 @@ public class KlineChartFragment extends BaseTabFragment {
                 mVolumeChart.setData(data);
                 //TODO:setVisibleXRangeMaximum封装到控件里面
                 mVolumeChart.setVisibleXRangeMaximum(60);
+                mVolumeChart.moveViewToX(klineItemList.size());
                 mVolumeChart.invalidate();
 
-                mCandelStickChart.setOnChartGestureListener(new CoupleChartGestureListener(
-                        mCandelStickChart, new Chart[]{mVolumeChart}));
+                mKlineChart.setOnChartGestureListener(new CoupleChartGestureListener(
+                        mKlineChart, new Chart[]{mVolumeChart}));
                 mVolumeChart.setOnChartGestureListener(new CoupleChartGestureListener(
-                        mVolumeChart, new Chart[]{mCandelStickChart}));
+                        mVolumeChart, new Chart[]{mKlineChart}));
 
             }
         }, new Response.ErrorListener() {

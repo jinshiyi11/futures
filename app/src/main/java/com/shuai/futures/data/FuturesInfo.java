@@ -10,14 +10,14 @@ public class FuturesInfo {
 
     }
 
-    public FuturesInfo(String id, String name) {
+    public FuturesInfo(String id/*, String name*/) {
         this.mId = id;
-        this.mName = name;
+//        this.mName = name;
     }
 
     @SerializedName("id")
     public String mId;
 
-    @SerializedName("name")
-    public String mName;
+//    @SerializedName("name")
+//    public String mName;
 }

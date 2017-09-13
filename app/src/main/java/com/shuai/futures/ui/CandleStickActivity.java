@@ -3,6 +3,7 @@ package com.shuai.futures.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -26,6 +27,8 @@ import com.shuai.futures.protocol.ProtocolUtils;
 import com.shuai.futures.ui.base.BaseFragment;
 import com.shuai.futures.ui.base.BaseFragmentActivity;
 import com.shuai.futures.utils.Utils;
+import com.shuai.futures.view.ViewPagerEx;
+import com.viewpagerindicator.TabPageIndicator;
 import com.viewpagerindicator.TabPageIndicatorEx;
 import com.viewpagerindicator.TabViewInterface;
 
@@ -41,12 +44,32 @@ public class CandleStickActivity extends BaseFragmentActivity {
     private String mFuturesName;
     private LoadingStatus mStatus = LoadingStatus.STATUS_LOADING;
     private RequestQueue mRequestQueue;
+    private Handler mHandler = new Handler();
 
     private ViewGroup mNoNetworkContainer;
     private ViewGroup mLoadingContainer;
     private ViewGroup mMainContainer;
     private TextView mTvTitle;
-    private ViewPager mViewPager;
+    private ViewPagerEx mViewPager;
+    FragmentPagerAdapter mAdapter;
+    private TabPageIndicatorEx mIndicator;
+
+    private TextView mTvCurrentPrice;
+    private TextView mTvDiff;
+    private TextView mTvPercent;
+    private TextView mTvOpen;
+    private TextView mTvClose;
+    private TextView mTvHigh;
+    private TextView mTvLow;
+
+    private FuturesPrice mPriceInfo;
+
+    private Runnable mRefreshRunnable = new Runnable() {
+        @Override
+        public void run() {
+            getFuturesPrice();
+        }
+    };
 
     private static final String[] TAB_TITLES = new String[]{"分时", "5分", "15分", "30分", "60分", "日K"};
 
@@ -58,9 +81,8 @@ public class CandleStickActivity extends BaseFragmentActivity {
         mContext = this;
         Intent intent = getIntent();
         mFuturesId = intent.getStringExtra(Constants.EXTRA_FUTURES_ID);
-        mFuturesName = intent.getStringExtra(Constants.EXTRA_FUTURES_NAME);
         mTvTitle = (TextView) findViewById(R.id.tv_title);
-        mTvTitle.setText(mFuturesName);
+        mTvTitle.setText("期货");
 
         mRequestQueue = MyApplication.getRequestQueue();
         mNoNetworkContainer = (ViewGroup) findViewById(R.id.no_network_container);
@@ -76,28 +98,20 @@ public class CandleStickActivity extends BaseFragmentActivity {
             }
         });
 
-        mViewPager = (ViewPager) findViewById(R.id.pager);
-        FragmentPagerAdapter adapter = new OrderTabAdapter(
+        mTvCurrentPrice = (TextView) findViewById(R.id.tv_current_price);
+        mTvDiff = (TextView) findViewById(R.id.tv_diff);
+        mTvPercent = (TextView) findViewById(R.id.tv_percent);
+        mTvOpen = (TextView) findViewById(R.id.tv_open);
+        mTvClose = (TextView) findViewById(R.id.tv_close);
+        mTvHigh = (TextView) findViewById(R.id.tv_high);
+        mTvLow = (TextView) findViewById(R.id.tv_low);
+
+        mViewPager = (ViewPagerEx) findViewById(R.id.pager);
+        mViewPager.setAllowDrag(false);
+        mAdapter = new OrderTabAdapter(
                 getSupportFragmentManager());
         mViewPager.setOffscreenPageLimit(TAB_TITLES.length);
-        mViewPager.setAdapter(adapter);
-        TabPageIndicatorEx indicator = (TabPageIndicatorEx) findViewById(R.id.tbi_order);
-
-        indicator.setViewPager(mViewPager);
-//        indicator.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-//
-//            @Override
-//            public void onPageSelected(int tab) {
-//            }
-//
-//            @Override
-//            public void onPageScrolled(int arg0, float arg1, int arg2) {
-//            }
-//
-//            @Override
-//            public void onPageScrollStateChanged(int arg0) {
-//            }
-//        });
+        mIndicator = (TabPageIndicatorEx) findViewById(R.id.tbi_order);
 
         setStatus(LoadingStatus.STATUS_LOADING);
         getFuturesPrice();
@@ -106,6 +120,7 @@ public class CandleStickActivity extends BaseFragmentActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mHandler.removeCallbacks(null);
         if (mRequestQueue != null) {
             mRequestQueue.cancelAll(this);
         }
@@ -136,20 +151,43 @@ public class CandleStickActivity extends BaseFragmentActivity {
 
     private void getFuturesPrice() {
         List<FuturesInfo> futures = new ArrayList<>();
-        futures.add(new FuturesInfo(mFuturesId, mFuturesName));
+        futures.add(new FuturesInfo(mFuturesId));
         GetFuturesPriceListTask request = new GetFuturesPriceListTask(mContext, futures, new Response.Listener<List<FuturesPrice>>() {
 
             @Override
             public void onResponse(List<FuturesPrice> futuresPrices) {
-                if (mStatus == LoadingStatus.STATUS_LOADING) {
-                    setStatus(LoadingStatus.STATUS_GOT_DATA);
+                mPriceInfo = futuresPrices.get(0);
+                if(mFuturesName==null) {
+                    mFuturesName = mPriceInfo.mName;
+                    mTvTitle.setText(mFuturesName);
+                }
+                int textColor = getResources().getColor(R.color.up);
+                if (mPriceInfo.mCurrentPrice < mPriceInfo.mLastdayPrice) {
+                    textColor = getResources().getColor(R.color.down);
                 }
 
-                if (futuresPrices.size() == 0) {
-                    //// TODO: 2017/9/9  log
-                } else {
-                    FuturesPrice price = futuresPrices.get(0);
+                mTvCurrentPrice.setText(String.valueOf(mPriceInfo.mCurrentPrice));
+                mTvCurrentPrice.setTextColor(textColor);
+
+                double diff = mPriceInfo.mCurrentPrice - mPriceInfo.mLastdayPrice;
+                mTvDiff.setText(diff >= 0 ? String.format("+%.2f", diff) : String.format("%.2f", diff));
+                mTvDiff.setTextColor(textColor);
+                mTvPercent.setText(diff >= 0 ? String.format("+%.2f%%", mPriceInfo.getPercent() * 100) : String.format("%.2f%%", mPriceInfo.getPercent() * 100));
+                mTvPercent.setTextColor(textColor);
+
+                mTvHigh.setText(String.valueOf(mPriceInfo.mHigh));
+                mTvLow.setText(String.valueOf(mPriceInfo.mLow));
+                mTvOpen.setText(String.valueOf(mPriceInfo.mOpen));
+                mTvClose.setText(String.valueOf(mPriceInfo.mLastdayPrice));
+
+                if (mStatus == LoadingStatus.STATUS_LOADING) {
+                    setStatus(LoadingStatus.STATUS_GOT_DATA);
+
+                    mViewPager.setAdapter(mAdapter);
+                    mIndicator.setViewPager(mViewPager);
                 }
+                refreshInfo();
+
             }
         }, new Response.ErrorListener() {
 
@@ -157,15 +195,21 @@ public class CandleStickActivity extends BaseFragmentActivity {
             public void onErrorResponse(VolleyError error) {
                 if (mStatus == LoadingStatus.STATUS_LOADING) {
                     setStatus(LoadingStatus.STATUS_NO_NETWORK);
+                    Utils.showShortToast(mContext, ProtocolUtils.getErrorInfo(error).getErrorMessage());
+                } else {
+                    refreshInfo();
                 }
-
-                Utils.showShortToast(mContext, ProtocolUtils.getErrorInfo(error).getErrorMessage());
             }
         }
         );
 
         request.setTag(this);
         mRequestQueue.add(request);
+    }
+
+    private void refreshInfo() {
+        mHandler.removeCallbacks(mRefreshRunnable);
+        mHandler.postDelayed(mRefreshRunnable, 1000);
     }
 
     class OrderTabAdapter extends FragmentPagerAdapter implements
@@ -180,8 +224,14 @@ public class CandleStickActivity extends BaseFragmentActivity {
             BaseFragment f;
             if (position == 0) {
                 f = new TimeLineChartFragment();
+                Bundle bundle = new Bundle();
+                bundle.putDouble(TimeLineChartFragment.KEY_LASTDAY_PRICE,mPriceInfo.mLastdayPrice);
+                f.setArguments(bundle);
             } else {
-                f = new KlineChartFragment(KlineChartFragment.KlineChartType.values()[position-1]);
+                f = new KlineChartFragment();
+                Bundle bundle = new Bundle();
+                bundle.putSerializable(KlineChartFragment.KEY_KLINE_CHART_TYPE,KlineChartFragment.KlineChartType.values()[position - 1]);
+                f.setArguments(bundle);
             }
             return f;
         }

@@ -1,6 +1,7 @@
 package com.shuai.futures.ui;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
@@ -32,7 +33,7 @@ import java.util.List;
 public class MarketFragment extends BaseTabFragment {
     private LoadingStatus mStatus = LoadingStatus.STATUS_LOADING;
     private RequestQueue mRequestQueue;
-
+    private Handler mHandler = new Handler();
     private ViewGroup mNoNetworkContainer;
     private ViewGroup mLoadingContainer;
     private ViewGroup mMainContainer;
@@ -41,6 +42,13 @@ public class MarketFragment extends BaseTabFragment {
     private List<FuturesInfo> mFuturesInfoList;
     private List<FuturesPrice> mFuturesPriceList = new ArrayList<>();
     private FuturesListAdapter mAdapter;
+
+    private Runnable mRefreshRunnable = new Runnable() {
+        @Override
+        public void run() {
+            getFuturesPrice();
+        }
+    };
 
     public MarketFragment() {
         super(R.layout.fragment_market);
@@ -88,6 +96,7 @@ public class MarketFragment extends BaseTabFragment {
 
     @Override
     public void onDestroyView() {
+        mHandler.removeCallbacks(null);
         if (mRequestQueue != null) {
             mRequestQueue.cancelAll(this);
         }
@@ -146,7 +155,15 @@ public class MarketFragment extends BaseTabFragment {
     }
 
     private void getFuturesPrice() {
-        GetFuturesPriceListTask request = new GetFuturesPriceListTask(mContext, mFuturesInfoList, new Response.Listener<List<FuturesPrice>>() {
+        List<FuturesInfo> idList = new ArrayList<>();
+        if (mFuturesPriceList.size() == 0) {
+            if(mFuturesInfoList.size()>50) {
+                idList=mFuturesInfoList.subList(0,50);
+            }else{
+                idList=mFuturesInfoList;
+            }
+        }
+        GetFuturesPriceListTask request = new GetFuturesPriceListTask(mContext, idList, new Response.Listener<List<FuturesPrice>>() {
 
             @Override
             public void onResponse(List<FuturesPrice> futuresPrices) {
@@ -172,22 +189,28 @@ public class MarketFragment extends BaseTabFragment {
                 }
 
                 mAdapter.notifyDataSetChanged();
+                refreshList();
             }
         }, new Response.ErrorListener() {
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                //// TODO: 2017/9/8
                 if (mAdapter.getCount() == 0) {
                     setStatus(LoadingStatus.STATUS_NO_NETWORK);
+                    Utils.showShortToast(mContext, ProtocolUtils.getErrorInfo(error).getErrorMessage());
+                } else {
+                    refreshList();
                 }
-
-                Utils.showShortToast(mContext, ProtocolUtils.getErrorInfo(error).getErrorMessage());
             }
         }
         );
 
         request.setTag(this);
         mRequestQueue.add(request);
+    }
+
+    private void refreshList() {
+        mHandler.removeCallbacks(mRefreshRunnable);
+        mHandler.postDelayed(mRefreshRunnable, 1000);
     }
 }

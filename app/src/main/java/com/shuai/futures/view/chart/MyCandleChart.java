@@ -7,13 +7,14 @@ import android.util.AttributeSet;
 import com.github.mikephil.charting.charts.CandleStickChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
-
-import static android.R.attr.label;
+import com.shuai.futures.R;
 
 /**
  *
  */
 public class MyCandleChart extends CandleStickChart {
+
+
     public MyCandleChart(Context context) {
         super(context);
         initParams();
@@ -29,7 +30,10 @@ public class MyCandleChart extends CandleStickChart {
         initParams();
     }
 
-    protected void initParams(){
+    protected void initParams() {
+        setRendererLeftYAxis(new LineYAxisRenderer(mViewPortHandler, mAxisLeft, mLeftAxisTransformer));
+        setRendererRightYAxis(new LineYAxisRenderer(mViewPortHandler, mAxisRight, mRightAxisTransformer));
+
         setScaleEnabled(false);
 
         setNoDataText(null);
@@ -38,17 +42,25 @@ public class MyCandleChart extends CandleStickChart {
         setScaleEnabled(false);
         setPinchZoom(false);
         setDrawBorders(true);
+        setBorderColor(getResources().getColor(R.color.chart_border));
+
         XAxis xAxis = getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setLabelCount(4);
+        xAxis.setLabelCount(4, true);
+        xAxis.setTextColor(getResources().getColor(R.color.chart_label));
+        xAxis.setYOffset(0);
+
         getAxisRight().setEnabled(false);
         YAxis axisLeft = getAxisLeft();
+        axisLeft.setTextColor(getResources().getColor(R.color.chart_label));
         axisLeft.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
-        axisLeft.setLabelCount(3);
+        axisLeft.setLabelCount(3, true);
 
         setMinOffset(0);
         setAutoScaleMinMaxEnabled(true);
 
 //        setVisibleXRangeMaximum(60);
     }
+
+
 }

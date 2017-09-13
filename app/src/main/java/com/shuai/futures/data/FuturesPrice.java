@@ -9,6 +9,11 @@ public class FuturesPrice {
     public double mCurrentPrice;
     public double mLastdayPrice;
 
+    public double mHigh;
+    public double mLow;
+    public double mOpen;
+    public int mVolume;
+
     public void update(FuturesPrice info){
         if(info==null){
             return;
@@ -21,7 +26,7 @@ public class FuturesPrice {
 
     public double getPercent(){
         double diff=mCurrentPrice - mLastdayPrice;
-        if(diff<0.00001){
+        if(Math.abs(diff)<0.00001){
             return 0;
         }
 

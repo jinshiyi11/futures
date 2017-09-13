@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     android:background="@color/default_background_color"
     android:gravity="center"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    xmlns:riv="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,9 +18,10 @@
             android:layout_width="82dp"
             android:layout_height="82dp" >
 
-            <ImageView
+            <com.makeramen.RoundedImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                riv:riv_corner_radius="41dp"
                 android:src="@drawable/ic_loading_1" />
 
             <ImageView

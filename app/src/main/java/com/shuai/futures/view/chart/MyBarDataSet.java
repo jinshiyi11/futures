@@ -1,9 +1,11 @@
 package com.shuai.futures.view.chart;
 
 
+import android.content.Context;
+
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.shuai.futures.data.IUpDown;
+import com.shuai.futures.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,18 +14,24 @@ import java.util.List;
  *
  */
 public class MyBarDataSet extends BarDataSet {
-    private static final int UP_COLOR=0xffd0402d;
-    private static final int DOWN_COLOR=0xff17b03e;
-    public MyBarDataSet(List<BarEntry> yVals, String label) {
+    private Context mContext;
+    private int mUpColor;
+    private int mDownColor;
+
+
+    public MyBarDataSet(Context context, List<BarEntry> yVals, String label) {
         super(yVals, label);
+        mContext = context;
+        mUpColor = mContext.getResources().getColor(R.color.up);
+        mDownColor = mContext.getResources().getColor(R.color.down);
         init();
     }
 
-    private void init(){
+    private void init() {
         setDrawValues(false);
-        List<Integer> colors=new ArrayList<>();
-        colors.add(UP_COLOR);
-        colors.add(DOWN_COLOR);
+        List<Integer> colors = new ArrayList<>();
+        colors.add(mUpColor);
+        colors.add(mDownColor);
         setColors(colors);
     }
 
@@ -35,11 +43,11 @@ public class MyBarDataSet extends BarDataSet {
     @Override
     public int getColor(int index) {
         BarEntry entry = getEntryForIndex(index);
-        IUpDown iUpDown= (IUpDown) entry.getData();
-        if(iUpDown.isUp()){
-            return UP_COLOR;
-        }else{
-            return DOWN_COLOR;
+        boolean isUp = (boolean) entry.getData();
+        if (isUp) {
+            return mUpColor;
+        } else {
+            return mDownColor;
         }
     }
 }

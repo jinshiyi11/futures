@@ -15,14 +15,15 @@ public class MyLineDataSet extends LineDataSet {
         super(yVals, label);
         init();
     }
-    
-    private void init(){
+
+    private void init() {
         setDrawCircleHole(false);
         setDrawCircles(false);
         setDrawValues(false);
-        setLineWidth(2);
+        setLineWidth(1);
         setColor(0xff3b7fed);
         setFillColor(0xffe2ecfc);
+        setFillAlpha(255);
         setDrawFilled(true);
     }
 }

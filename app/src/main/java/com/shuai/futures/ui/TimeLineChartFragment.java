@@ -35,12 +35,17 @@ import java.util.List;
  * 分时图
  */
 public class TimeLineChartFragment extends BaseTabFragment {
+    public static final String KEY_LASTDAY_PRICE = "key_lastday_price";
     private RequestQueue mRequestQueue;
     private String mFuturesId;
     private String mFuturesName;
 
     private MyLineChart mTimeLineChart;
     private MyBarChart mVolumeChart;
+
+    private double mLastdayPrice;
+
+    //public int MAX_ENTRY_COUNT_=376;//459
 
     public TimeLineChartFragment() {
         super(R.layout.fragment_time_chart);
@@ -53,10 +58,11 @@ public class TimeLineChartFragment extends BaseTabFragment {
         mFuturesId = intent.getStringExtra(Constants.EXTRA_FUTURES_ID);
         mFuturesName = intent.getStringExtra(Constants.EXTRA_FUTURES_NAME);
 
-
+        mLastdayPrice = getArguments().getDouble(KEY_LASTDAY_PRICE);
         mTimeLineChart = (MyLineChart) root.findViewById(R.id.chart_realtime);
         mVolumeChart = (MyBarChart) root.findViewById(R.id.chart_volume);
 
+        mTimeLineChart.setBasePrice(mLastdayPrice);
         getTimeLineInfo();
     }
 
@@ -69,7 +75,7 @@ public class TimeLineChartFragment extends BaseTabFragment {
     }
 
     private void getTimeLineInfo() {
-        GetTimeLineTask request=new GetTimeLineTask(mContext,mFuturesId,new Response.Listener<List<TimeLineItem>>(){
+        GetTimeLineTask request = new GetTimeLineTask(mContext, mFuturesId, new Response.Listener<List<TimeLineItem>>() {
 
             @Override
             public void onResponse(List<TimeLineItem> timeLineItemList) {
@@ -81,19 +87,23 @@ public class TimeLineChartFragment extends BaseTabFragment {
                 MyLineDataSet dataSet = new MyLineDataSet(entries, "Label"); // add entries to dataset
                 LineData lineData = new LineData(dataSet);
                 mTimeLineChart.setData(lineData);
+                //TODO：期货交易时长
+                mTimeLineChart.getXAxis().setAxisMaximum(420);
                 mTimeLineChart.invalidate();
 
                 ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
                 for (int i = 0; i < timeLineItemList.size(); i++) {
                     TimeLineItem item = timeLineItemList.get(i);
-                    yVals1.add(new BarEntry(i, item.mVolume, item));
+                    yVals1.add(new BarEntry(i, item.mVolume, item.mCurrentPrice>=mLastdayPrice));
                 }
-                MyBarDataSet set1 = new MyBarDataSet(yVals1, "");
+                MyBarDataSet set1 = new MyBarDataSet(mContext, yVals1, "");
                 set1.setDrawValues(false);
                 ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
                 dataSets.add(set1);
                 BarData data = new BarData(dataSets);
                 mVolumeChart.setData(data);
+                //TODO：期货交易时长
+                mVolumeChart.getXAxis().setAxisMaximum(420);
                 mVolumeChart.invalidate();
 
                 mTimeLineChart.setOnChartGestureListener(new CoupleChartGestureListener(
@@ -101,7 +111,7 @@ public class TimeLineChartFragment extends BaseTabFragment {
                 mVolumeChart.setOnChartGestureListener(new CoupleChartGestureListener(
                         mVolumeChart, new Chart[]{mTimeLineChart}));
             }
-        },new Response.ErrorListener(){
+        }, new Response.ErrorListener() {
 
             @Override
             public void onErrorResponse(VolleyError error) {

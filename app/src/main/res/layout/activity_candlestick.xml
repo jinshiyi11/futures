@@ -67,126 +67,142 @@
                 android:layout_alignLeft="@+id/tv_current_price"
                 android:layout_below="@+id/tv_current_price"
                 android:layout_marginTop="3dp"
+                android:text="+0.00"
                 android:textColor="@color/up"
-                android:textSize="12sp"
-                android:text="+0.00" />
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/tv_percent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignTop="@+id/tv_diff"
-                android:layout_toRightOf="@+id/tv_diff"
                 android:layout_marginLeft="5dp"
+                android:layout_toRightOf="@+id/tv_diff"
+                android:text="+0.00%"
                 android:textColor="@color/up"
-                android:textSize="12sp"
-                android:text="+0.00%" />
+                android:textSize="12sp" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_alignTop="@+id/tv_current_price"
-                android:layout_marginLeft="140dp">
+                android:layout_marginLeft="140dp"
+                android:orientation="horizontal">
+
                 <TextView
                     android:id="@+id/tv_open_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="今开"
                     android:textColor="@color/gray_color_6"
-                    android:textSize="12sp"
-                    android:text="今开" />
+                    android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/tv_open"
                     android:layout_width="80dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
+                    android:text="0.00"
                     android:textColor="@color/default_text_color"
-                    android:textSize="12sp"
-                    android:text="0.00" />
+                    android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/tv_high_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="最高"
                     android:textColor="@color/gray_color_6"
-                    android:textSize="12sp"
-                    android:text="最高" />
+                    android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/tv_high"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
+                    android:text="0.00"
                     android:textColor="@color/default_text_color"
-                    android:textSize="12sp"
-                    android:text="0.00" />
+                    android:textSize="12sp" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_alignBottom="@+id/tv_percent"
-                android:layout_marginLeft="140dp">
+                android:layout_marginLeft="140dp"
+                android:orientation="horizontal">
+
                 <TextView
                     android:id="@+id/tv_close_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="昨收"
                     android:textColor="@color/gray_color_6"
-                    android:textSize="12sp"
-                    android:text="昨收" />
+                    android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/tv_close"
                     android:layout_width="80dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
+                    android:text="0.00"
                     android:textColor="@color/default_text_color"
-                    android:textSize="12sp"
-                    android:text="0.00" />
+                    android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/tv_low_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="最低"
                     android:textColor="@color/gray_color_6"
-                    android:textSize="12sp"
-                    android:text="最低" />
+                    android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/tv_low"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
+                    android:text="0.00"
                     android:textColor="@color/default_text_color"
-                    android:textSize="12sp"
-                    android:text="0.00" />
+                    android:textSize="12sp" />
             </LinearLayout>
 
         </RelativeLayout>
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:background="#edf0f5"></View>
+
         <LinearLayout
             android:id="@+id/ll_order_head"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#fafafa"
+            android:layout_height="32dp"
+            android:layout_marginBottom="5dp"
             android:orientation="vertical">
+
+            <com.shuai.futures.view.chart.TimeLineHead
+                android:id="@+id/ll_time_line_head"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone" />
+
+            <com.shuai.futures.view.chart.KlineHead
+                android:id="@+id/ll_kline_head"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone" />
 
             <com.viewpagerindicator.TabPageIndicatorEx
                 android:id="@+id/tbi_order"
                 android:layout_width="match_parent"
-                android:layout_height="32dp"
-                android:layout_marginBottom="5dp"
-                android:layout_marginTop="5dp" />
+                android:layout_height="match_parent" />
         </LinearLayout>
 
         <com.shuai.futures.view.ViewPagerEx
             android:id="@+id/pager"
             android:layout_width="match_parent"
             android:layout_height="262dp"
-            android:paddingBottom="10dp"
-            android:paddingTop="6dp" />
+            android:paddingBottom="10dp" />
 
 
     </LinearLayout>

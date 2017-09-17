@@ -9,6 +9,7 @@ import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.renderer.LineChartRenderer;
 import com.shuai.futures.R;
 
 import java.text.DecimalFormat;
@@ -65,6 +66,11 @@ public class MyBarChart extends BarChart {
     }
 
     protected void initParams() {
+        mRenderer = new MyBarChartRenderer(this, mAnimator, mViewPortHandler);
+
+        mChartTouchListener=new MyChartTouchListener(this, mViewPortHandler.getMatrixTouch(), 3f);
+        setHighlightPerTapEnabled(false);
+
         setRendererLeftYAxis(new LineYAxisRenderer(mViewPortHandler, mAxisLeft, mLeftAxisTransformer));
         setRendererRightYAxis(new LineYAxisRenderer(mViewPortHandler, mAxisRight, mRightAxisTransformer));
 //        setDoubleTapToZoomEnabled(false);

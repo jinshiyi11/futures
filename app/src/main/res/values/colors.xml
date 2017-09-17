@@ -6,8 +6,10 @@
     <color name="up">#d0402d</color>
     <color name="down">#17b03e</color>
     <color name="chart_label">#9d9d9d</color>
-    <color name="chart_border">#cfd5e0</color>
+    <color name="chart_border">#dddddd</color>
+    <color name="chart_grid">#dddddd</color>
     <color name="chart_base_line">#cfd5e0</color>
+    <color name="chart_highlight">#c1c1c1</color>
 
     <color name="chart_ma5">#cd4343</color>
     <color name="chart_ma10">#8c3037</color>

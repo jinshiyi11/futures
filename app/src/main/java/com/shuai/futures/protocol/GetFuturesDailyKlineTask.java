@@ -8,42 +8,42 @@ import com.android.volley.ParseError;
 import com.android.volley.Response;
 import com.android.volley.Response.Listener;
 import com.android.volley.toolbox.HttpHeaderParser;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonParser;
-import com.google.gson.reflect.TypeToken;
 import com.shuai.futures.data.Constants;
-import com.shuai.futures.data.FuturesInfo;
 import com.shuai.futures.data.KlineItem;
-import com.shuai.futures.ui.KlineChartFragment;
+import com.shuai.futures.view.chart.KlineType;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.umeng.analytics.pro.dm.i;
 
 /**
  * 获取日线数据
  */
 public class GetFuturesDailyKlineTask extends BaseTask<List<KlineItem>> {
     private static final String TAG = GetFuturesDailyKlineTask.class.getSimpleName();
+    private SimpleDateFormat mFormat;
+    private KlineType mKlineType;
 
-    public GetFuturesDailyKlineTask(Context context, String futureId, KlineChartFragment.KlineChartType klineType, Listener<List<KlineItem>> listener, Response.ErrorListener errorListener) {
-        super(Method.GET, getUrl(futureId,klineType), null, listener, errorListener);
+    public GetFuturesDailyKlineTask(Context context, String futureId, KlineType klineType, Listener<List<KlineItem>> listener, Response.ErrorListener errorListener) {
+        super(Method.GET, getUrl(futureId, klineType), null, listener, errorListener);
+        mKlineType = klineType;
     }
 
     /**
      * http://stock2.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesDailyKLine?symbol=M0
+     *
      * @param futureId
      * @param klineType
      * @return
      */
-    private static String getUrl(String futureId, KlineChartFragment.KlineChartType klineType) {
+    private static String getUrl(String futureId, KlineType klineType) {
         StringBuilder url = null;
-        switch (klineType){
+        switch (klineType) {
             case K5Minutes:
                 url = new StringBuilder("http://stock2.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesMiniKLine5m?symbol=");
                 break;
@@ -72,18 +72,42 @@ public class GetFuturesDailyKlineTask extends BaseTask<List<KlineItem>> {
                 Log.d(TAG, jsonString);
             }
 
-            List<KlineItem> result = new ArrayList<>();
             JSONArray root = new JSONArray(jsonString);
-            for (int i = 0; i < root.length(); i++) {
-                JSONArray itemJson = root.getJSONArray(i);
-                KlineItem item = new KlineItem();
-                item.mDate = itemJson.getString(0);
-                item.mOpen = Double.parseDouble(itemJson.getString(1));
-                item.mHigh = Double.parseDouble(itemJson.getString(2));
-                item.mLow = Double.parseDouble(itemJson.getString(3));
-                item.mClose = Double.parseDouble(itemJson.getString(4));
-                item.mVolume = Integer.parseInt(itemJson.getString(5));
-                result.add(item);
+            List<KlineItem> result = new ArrayList<>(root.length());
+            if (mKlineType == KlineType.KDaily) {
+                //日线的数据从旧到新
+                if (mFormat == null) {
+                    mFormat = new SimpleDateFormat("yy-MM-dd");
+                }
+                for (int i = 0; i < root.length(); ++i) {
+                    JSONArray itemJson = root.getJSONArray(i);
+                    KlineItem item = new KlineItem();
+                    item.mDateString = itemJson.getString(0);
+                    item.mDate = mFormat.parse(item.mDateString);
+                    item.mOpen = Double.parseDouble(itemJson.getString(1));
+                    item.mHigh = Double.parseDouble(itemJson.getString(2));
+                    item.mLow = Double.parseDouble(itemJson.getString(3));
+                    item.mClose = Double.parseDouble(itemJson.getString(4));
+                    item.mVolume = Integer.parseInt(itemJson.getString(5));
+                    result.add(item);
+                }
+            } else {
+                //分钟线的数据从新到旧
+                if (mFormat == null) {
+                    mFormat = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
+                }
+                for (int i = root.length() - 1; i >= 0; --i) {
+                    JSONArray itemJson = root.getJSONArray(i);
+                    KlineItem item = new KlineItem();
+                    item.mDateString = itemJson.getString(0);
+                    item.mDate = mFormat.parse(item.mDateString);
+                    item.mOpen = Double.parseDouble(itemJson.getString(1));
+                    item.mHigh = Double.parseDouble(itemJson.getString(2));
+                    item.mLow = Double.parseDouble(itemJson.getString(3));
+                    item.mClose = Double.parseDouble(itemJson.getString(4));
+                    item.mVolume = Integer.parseInt(itemJson.getString(5));
+                    result.add(item);
+                }
             }
 
             return Response.success(result, HttpHeaderParser.parseCacheHeaders(response));

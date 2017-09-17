@@ -32,6 +32,8 @@ public class MyCombinedChart extends CombinedChart {
 
     private boolean mShowMa30 = true;
 
+    private KlineType mKlineType;
+
     public MyCombinedChart(Context context) {
         super(context);
         initParam();
@@ -48,12 +50,16 @@ public class MyCombinedChart extends CombinedChart {
     }
 
     private void initParam() {
+        mChartTouchListener = new MyChartTouchListener(this, mViewPortHandler.getMatrixTouch(), 3f);
+        setHighlightPerTapEnabled(false);
+
         setDrawOrder(new DrawOrder[]{
                 DrawOrder.BAR, DrawOrder.BUBBLE, DrawOrder.CANDLE, DrawOrder.LINE, DrawOrder.SCATTER
         });
 
         setRendererLeftYAxis(new LineYAxisRenderer(mViewPortHandler, mAxisLeft, mLeftAxisTransformer));
         setRendererRightYAxis(new LineYAxisRenderer(mViewPortHandler, mAxisRight, mRightAxisTransformer));
+
 
         setScaleEnabled(false);
 
@@ -66,18 +72,22 @@ public class MyCombinedChart extends CombinedChart {
         setBorderColor(getResources().getColor(R.color.chart_border));
 
         XAxis xAxis = getXAxis();
+        xAxis.setAvoidFirstLastClipping(true);
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setLabelCount(4, true);
         xAxis.setTextColor(getResources().getColor(R.color.chart_label));
         xAxis.setYOffset(0);
+        xAxis.setGridColor(getResources().getColor(R.color.chart_grid));
 
         getAxisRight().setEnabled(false);
         YAxis axisLeft = getAxisLeft();
         axisLeft.setTextColor(getResources().getColor(R.color.chart_label));
         axisLeft.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
         axisLeft.setLabelCount(3, true);
+        axisLeft.setGridColor(getResources().getColor(R.color.chart_grid));
 
         setMinOffset(0);
+        setExtraBottomOffset(5);
         setAutoScaleMinMaxEnabled(true);
     }
 
@@ -96,7 +106,8 @@ public class MyCombinedChart extends CombinedChart {
                     dataList[i] = (double) values.get(i).getClose();
                 }
                 if (mShowMa5) {
-                    LineDataSet lineDataSet = new LineDataSet(createMa(dataList,5), null);
+                    LineDataSet lineDataSet = new LineDataSet(createMa(dataList, 5), null);
+                    lineDataSet.setHighlightEnabled(false);
                     lineDataSet.setColor(getResources().getColor(R.color.chart_ma5));
                     lineDataSet.setDrawCircleHole(false);
                     lineDataSet.setDrawCircles(false);
@@ -104,7 +115,8 @@ public class MyCombinedChart extends CombinedChart {
                 }
 
                 if (mShowMa10) {
-                    LineDataSet lineDataSet = new LineDataSet(createMa(dataList,10), null);
+                    LineDataSet lineDataSet = new LineDataSet(createMa(dataList, 10), null);
+                    lineDataSet.setHighlightEnabled(false);
                     lineDataSet.setColor(getResources().getColor(R.color.chart_ma10));
                     lineDataSet.setDrawCircleHole(false);
                     lineDataSet.setDrawCircles(false);
@@ -112,7 +124,8 @@ public class MyCombinedChart extends CombinedChart {
                 }
 
                 if (mShowMa20) {
-                    LineDataSet lineDataSet = new LineDataSet(createMa(dataList,20), null);
+                    LineDataSet lineDataSet = new LineDataSet(createMa(dataList, 20), null);
+                    lineDataSet.setHighlightEnabled(false);
                     lineDataSet.setColor(getResources().getColor(R.color.chart_ma20));
                     lineDataSet.setDrawCircleHole(false);
                     lineDataSet.setDrawCircles(false);
@@ -120,7 +133,8 @@ public class MyCombinedChart extends CombinedChart {
                 }
 
                 if (mShowMa30) {
-                    LineDataSet lineDataSet = new LineDataSet(createMa(dataList,30), null);
+                    LineDataSet lineDataSet = new LineDataSet(createMa(dataList, 30), null);
+                    lineDataSet.setHighlightEnabled(false);
                     lineDataSet.setColor(getResources().getColor(R.color.chart_ma30));
                     lineDataSet.setDrawCircleHole(false);
                     lineDataSet.setDrawCircles(false);
@@ -135,12 +149,19 @@ public class MyCombinedChart extends CombinedChart {
         super.notifyDataSetChanged();
     }
 
-    private List<Entry> createMa(double[] list,int maN) {
+    private List<Entry> createMa(double[] list, int maN) {
         double[] values = ChartUtil.getMa(list, maN);
         List<Entry> entryList = new ArrayList<>(values.length);
         for (int i = 0; i < values.length; i++) {
             entryList.add(new Entry(i, (float) values[i]));
         }
         return entryList;
+    }
+
+    public void setKlineType(KlineType klineType) {
+        mKlineType = klineType;
+
+        getXAxis().setValueFormatter(new KlineXAxisValueFormatter(this, mKlineType));
+        setXAxisRenderer(new MyXAxisRenderer(this, mKlineType, mViewPortHandler, mXAxis, mLeftAxisTransformer));
     }
 }

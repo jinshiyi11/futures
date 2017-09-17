@@ -10,4 +10,6 @@
     <string name="launch_app_market_failed">您的手机上未发现应用市场</string>
     <string name="no_network_hint">无法连接网络，请点击刷新</string>
     <string name="one_more_exit">再按一次退出</string>
+
+    <string name="price_tpl">%1$s &lt;font color=&quot;%2$s&quot;&gt;%3$s&lt;/font&gt;</string>
 </resources>

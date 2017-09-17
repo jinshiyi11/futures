@@ -14,6 +14,7 @@ import com.shuai.futures.data.TimeLineItem;
 import org.json.JSONArray;
 
 import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +23,7 @@ import java.util.List;
  */
 public class GetTimeLineTask extends BaseTask<List<TimeLineItem>> {
     private static final String TAG = GetTimeLineTask.class.getSimpleName();
+    private SimpleDateFormat mFormat = new SimpleDateFormat("mm:ss");
 
     public GetTimeLineTask(Context context, String futureId, Listener<List<TimeLineItem>> listener, Response.ErrorListener errorListener) {
         super(Method.GET, getUrl(futureId), null, listener, errorListener);
@@ -49,6 +51,7 @@ public class GetTimeLineTask extends BaseTask<List<TimeLineItem>> {
                 JSONArray itemJson = root.getJSONArray(i);
                 TimeLineItem item = new TimeLineItem();
                 item.mMinuteSecond = itemJson.getString(0);
+                item.mDate=mFormat.parse(item.mMinuteSecond);
                 item.mCurrentPrice = Double.parseDouble(itemJson.getString(1));
                 item.mAveragePrice = Double.parseDouble(itemJson.getString(2));
                 item.mTurnover = Integer.parseInt(itemJson.getString(3));

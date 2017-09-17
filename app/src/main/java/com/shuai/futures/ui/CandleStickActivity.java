@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
@@ -21,13 +22,20 @@ import com.shuai.futures.R;
 import com.shuai.futures.data.Constants;
 import com.shuai.futures.data.FuturesInfo;
 import com.shuai.futures.data.FuturesPrice;
+import com.shuai.futures.data.KlineItem;
 import com.shuai.futures.data.LoadingStatus;
+import com.shuai.futures.data.TimeLineItem;
 import com.shuai.futures.protocol.GetFuturesPriceListTask;
 import com.shuai.futures.protocol.ProtocolUtils;
 import com.shuai.futures.ui.base.BaseFragment;
 import com.shuai.futures.ui.base.BaseFragmentActivity;
 import com.shuai.futures.utils.Utils;
 import com.shuai.futures.view.ViewPagerEx;
+import com.shuai.futures.view.chart.KlineHead;
+import com.shuai.futures.view.chart.KlineType;
+import com.shuai.futures.view.chart.OnKlineHighlightListener;
+import com.shuai.futures.view.chart.OnTimeLineHighlightListener;
+import com.shuai.futures.view.chart.TimeLineHead;
 import com.viewpagerindicator.TabPageIndicator;
 import com.viewpagerindicator.TabPageIndicatorEx;
 import com.viewpagerindicator.TabViewInterface;
@@ -38,7 +46,7 @@ import java.util.List;
 /**
  *
  */
-public class CandleStickActivity extends BaseFragmentActivity {
+public class CandleStickActivity extends BaseFragmentActivity implements OnTimeLineHighlightListener, OnKlineHighlightListener {
     private Context mContext;
     private String mFuturesId;
     private String mFuturesName;
@@ -62,6 +70,9 @@ public class CandleStickActivity extends BaseFragmentActivity {
     private TextView mTvHigh;
     private TextView mTvLow;
 
+    private TimeLineHead mTimelineHead;
+    private KlineHead mKlineHead;
+
     private FuturesPrice mPriceInfo;
 
     private Runnable mRefreshRunnable = new Runnable() {
@@ -72,6 +83,7 @@ public class CandleStickActivity extends BaseFragmentActivity {
     };
 
     private static final String[] TAB_TITLES = new String[]{"分时", "5分", "15分", "30分", "60分", "日K"};
+    private static final KlineType[] KLINE_TYPES = {null, KlineType.K5Minutes, KlineType.K15Minutes, KlineType.K30Minutes, KlineType.K60Minutes, KlineType.KDaily,};
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -106,6 +118,8 @@ public class CandleStickActivity extends BaseFragmentActivity {
         mTvHigh = (TextView) findViewById(R.id.tv_high);
         mTvLow = (TextView) findViewById(R.id.tv_low);
 
+        mTimelineHead = (TimeLineHead) findViewById(R.id.ll_time_line_head);
+        mKlineHead = (KlineHead) findViewById(R.id.ll_kline_head);
         mViewPager = (ViewPagerEx) findViewById(R.id.pager);
         mViewPager.setAllowDrag(false);
         mAdapter = new OrderTabAdapter(
@@ -157,7 +171,7 @@ public class CandleStickActivity extends BaseFragmentActivity {
             @Override
             public void onResponse(List<FuturesPrice> futuresPrices) {
                 mPriceInfo = futuresPrices.get(0);
-                if(mFuturesName==null) {
+                if (mFuturesName == null) {
                     mFuturesName = mPriceInfo.mName;
                     mTvTitle.setText(mFuturesName);
                 }
@@ -212,6 +226,40 @@ public class CandleStickActivity extends BaseFragmentActivity {
         mHandler.postDelayed(mRefreshRunnable, 1000);
     }
 
+    @Override
+    public void onTimeLineHighlighted(TimeLineItem item) {
+        if (mTimelineHead.getVisibility() != View.VISIBLE) {
+            mTimelineHead.setVisibility(View.VISIBLE);
+            mIndicator.setVisibility(View.GONE);
+        }
+        mTimelineHead.setData(mPriceInfo.mLastdayPrice, item);
+    }
+
+    @Override
+    public void onTimeLineUnhightlighted() {
+        if (mTimelineHead.getVisibility() == View.VISIBLE) {
+            mTimelineHead.setVisibility(View.GONE);
+            mIndicator.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void onKlineHighlighted(KlineItem item) {
+        if (mKlineHead.getVisibility() != View.VISIBLE) {
+            mKlineHead.setVisibility(View.VISIBLE);
+            mIndicator.setVisibility(View.GONE);
+        }
+        mKlineHead.setData(mPriceInfo.mLastdayPrice, item);
+    }
+
+    @Override
+    public void onKlineUnhightlighted() {
+        if (mKlineHead.getVisibility() == View.VISIBLE) {
+            mKlineHead.setVisibility(View.GONE);
+            mIndicator.setVisibility(View.VISIBLE);
+        }
+    }
+
     class OrderTabAdapter extends FragmentPagerAdapter implements
             TabViewInterface {
 
@@ -225,13 +273,16 @@ public class CandleStickActivity extends BaseFragmentActivity {
             if (position == 0) {
                 f = new TimeLineChartFragment();
                 Bundle bundle = new Bundle();
-                bundle.putDouble(TimeLineChartFragment.KEY_LASTDAY_PRICE,mPriceInfo.mLastdayPrice);
+                bundle.putDouble(TimeLineChartFragment.KEY_LASTDAY_PRICE, mPriceInfo.mLastdayPrice);
                 f.setArguments(bundle);
+
+                ((TimeLineChartFragment) f).setHighlightListener(CandleStickActivity.this);
             } else {
                 f = new KlineChartFragment();
                 Bundle bundle = new Bundle();
-                bundle.putSerializable(KlineChartFragment.KEY_KLINE_CHART_TYPE,KlineChartFragment.KlineChartType.values()[position - 1]);
+                bundle.putSerializable(KlineChartFragment.KEY_KLINE_CHART_TYPE, KLINE_TYPES[position]);
                 f.setArguments(bundle);
+                ((KlineChartFragment) f).setHighlightListener(CandleStickActivity.this);
             }
             return f;
         }

@@ -2,6 +2,7 @@ package com.shuai.futures.view.chart;
 
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.util.AttributeSet;
 
 import com.github.mikephil.charting.charts.LineChart;
@@ -18,6 +19,7 @@ public class MyLineChart extends LineChart {
     private double mBasePrice = 0;
     private LineLeftAxisValueFormatter mLeftValueFormatter;
     private LineRightAxisValueFormatter mRightValueFormatter;
+    private KlineType mKlineType;
 
 
     public MyLineChart(Context context) {
@@ -36,6 +38,9 @@ public class MyLineChart extends LineChart {
     }
 
     protected void initParams() {
+        mRenderer = new MyLineChartRenderer(this, mAnimator, mViewPortHandler);
+        mChartTouchListener=new MyChartTouchListener(this, mViewPortHandler.getMatrixTouch(), 3f);
+        setHighlightPerTapEnabled(false);
         setRendererLeftYAxis(new LineYAxisRenderer(mViewPortHandler, mAxisLeft, mLeftAxisTransformer));
         setRendererRightYAxis(new LineYAxisRenderer(mViewPortHandler, mAxisRight, mRightAxisTransformer));
 
@@ -49,11 +54,13 @@ public class MyLineChart extends LineChart {
         setBorderWidth(1);
 
         XAxis xAxis = getXAxis();
+        xAxis.setValueFormatter(new TimeLineXAxisValueFormatter(this));
         xAxis.setAvoidFirstLastClipping(true);
         xAxis.setTextColor(getResources().getColor(R.color.chart_label));
         xAxis.setLabelCount(3, true);
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setYOffset(0);
+        xAxis.setGridColor(getResources().getColor(R.color.chart_grid));
 
         YAxis axisLeft = getAxisLeft();
         axisLeft.setDrawGridLines(false);
@@ -72,6 +79,7 @@ public class MyLineChart extends LineChart {
         axisRight.setValueFormatter(mRightValueFormatter);
 
         setMinOffset(0);
+        setExtraBottomOffset(5);
         setAutoScaleMinMaxEnabled(true);
     }
 
@@ -84,6 +92,13 @@ public class MyLineChart extends LineChart {
         baseLine.enableDashedLine(5f, 5f, 0f);
         getAxisLeft().removeAllLimitLines();
         getAxisLeft().addLimitLine(baseLine);
+    }
+
+    public void setKlineType(KlineType klineType) {
+        mKlineType = klineType;
+
+//        getXAxis().setValueFormatter(new KlineXAxisValueFormatter(this, mKlineType));
+        setXAxisRenderer(new MyXAxisRenderer(this, mKlineType, mViewPortHandler, mXAxis, mLeftAxisTransformer));
     }
 
     @Override
@@ -108,5 +123,10 @@ public class MyLineChart extends LineChart {
             getAxisRight().setAxisMaximum(yMax);
         }
         super.notifyDataSetChanged();
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
     }
 }

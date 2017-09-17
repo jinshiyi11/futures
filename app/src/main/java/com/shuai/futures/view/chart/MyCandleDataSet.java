@@ -38,6 +38,7 @@ public class MyCandleDataSet extends CandleDataSet {
         setIncreasingPaintStyle(Paint.Style.FILL);
         setNeutralColor(Color.BLUE);
         //set1.setHighlightLineWidth(1f);
+        setHighLightColor(mContext.getResources().getColor(R.color.chart_highlight));
 
     }
 }

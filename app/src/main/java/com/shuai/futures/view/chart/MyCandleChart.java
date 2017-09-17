@@ -13,7 +13,7 @@ import com.shuai.futures.R;
  *
  */
 public class MyCandleChart extends CandleStickChart {
-
+    private KlineType mKlineType;
 
     public MyCandleChart(Context context) {
         super(context);
@@ -31,6 +31,9 @@ public class MyCandleChart extends CandleStickChart {
     }
 
     protected void initParams() {
+        mChartTouchListener=new MyChartTouchListener(this, mViewPortHandler.getMatrixTouch(), 3f);
+        setHighlightPerTapEnabled(false);
+
         setRendererLeftYAxis(new LineYAxisRenderer(mViewPortHandler, mAxisLeft, mLeftAxisTransformer));
         setRendererRightYAxis(new LineYAxisRenderer(mViewPortHandler, mAxisRight, mRightAxisTransformer));
 
@@ -45,21 +48,32 @@ public class MyCandleChart extends CandleStickChart {
         setBorderColor(getResources().getColor(R.color.chart_border));
 
         XAxis xAxis = getXAxis();
+        xAxis.setAvoidFirstLastClipping(true);
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setLabelCount(4, true);
         xAxis.setTextColor(getResources().getColor(R.color.chart_label));
         xAxis.setYOffset(0);
+        xAxis.setGridColor(getResources().getColor(R.color.chart_grid));
 
         getAxisRight().setEnabled(false);
         YAxis axisLeft = getAxisLeft();
         axisLeft.setTextColor(getResources().getColor(R.color.chart_label));
         axisLeft.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
         axisLeft.setLabelCount(3, true);
+        axisLeft.setGridColor(getResources().getColor(R.color.chart_grid));
 
         setMinOffset(0);
+        setExtraBottomOffset(5);
         setAutoScaleMinMaxEnabled(true);
 
 //        setVisibleXRangeMaximum(60);
+    }
+
+    public void setKlineType(KlineType klineType) {
+        mKlineType = klineType;
+
+        // getXAxis().setValueFormatter(new KlineXAxisValueFormatter(this, mKlineType));
+        setXAxisRenderer(new MyXAxisRenderer(this, mKlineType, mViewPortHandler, mXAxis, mLeftAxisTransformer));
     }
 
 

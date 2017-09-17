@@ -33,6 +33,7 @@ public class MyBarDataSet extends BarDataSet {
         colors.add(mUpColor);
         colors.add(mDownColor);
         setColors(colors);
+        setHighLightColor(mContext.getResources().getColor(R.color.chart_highlight));
     }
 
     @Override

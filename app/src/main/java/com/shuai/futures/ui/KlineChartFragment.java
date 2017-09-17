@@ -14,20 +14,29 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.CandleData;
 import com.github.mikephil.charting.data.CandleEntry;
 import com.github.mikephil.charting.data.CombinedData;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
+import com.github.mikephil.charting.interfaces.datasets.ICandleDataSet;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.shuai.futures.MyApplication;
 import com.shuai.futures.R;
 import com.shuai.futures.data.Constants;
 import com.shuai.futures.data.KlineItem;
+import com.shuai.futures.data.TimeLineItem;
 import com.shuai.futures.protocol.GetFuturesDailyKlineTask;
 import com.shuai.futures.protocol.ProtocolUtils;
 import com.shuai.futures.ui.base.BaseTabFragment;
 import com.shuai.futures.utils.Utils;
 import com.shuai.futures.view.chart.CoupleChartGestureListener;
+import com.shuai.futures.view.chart.CoupleChartValueSelectedListener;
+import com.shuai.futures.view.chart.KlineType;
 import com.shuai.futures.view.chart.MyBarChart;
 import com.shuai.futures.view.chart.MyBarDataSet;
 import com.shuai.futures.view.chart.MyCandleDataSet;
 import com.shuai.futures.view.chart.MyCombinedChart;
+import com.shuai.futures.view.chart.OnKlineHighlightListener;
+import com.shuai.futures.view.chart.OnTimeLineHighlightListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,23 +45,17 @@ import java.util.List;
  *
  */
 
-public class KlineChartFragment extends BaseTabFragment {
-    public static final String  KEY_KLINE_CHART_TYPE="key_kline_chart_type";
+public class KlineChartFragment extends BaseTabFragment implements OnChartValueSelectedListener {
+    public static final String KEY_KLINE_CHART_TYPE = "key_kline_chart_type";
     private RequestQueue mRequestQueue;
     private String mFuturesId;
     private String mFuturesName;
 
     private MyCombinedChart mKlineChart;
     private MyBarChart mVolumeChart;
-    private KlineChartType mKlineType;
+    private KlineType mKlineType;
 
-    public enum KlineChartType {
-        K5Minutes,
-        K15Minutes,
-        K30Minutes,
-        K60Minutes,
-        KDaily
-    }
+    private OnKlineHighlightListener mHighlightListener;
 
     public KlineChartFragment() {
         super(R.layout.fragment_kline_chart);
@@ -65,13 +68,14 @@ public class KlineChartFragment extends BaseTabFragment {
         Intent intent = getActivity().getIntent();
         mFuturesId = intent.getStringExtra(Constants.EXTRA_FUTURES_ID);
         mFuturesName = intent.getStringExtra(Constants.EXTRA_FUTURES_NAME);
-        mKlineType = (KlineChartType) getArguments().getSerializable(KEY_KLINE_CHART_TYPE);
-
-
+        mKlineType = (KlineType) getArguments().getSerializable(KEY_KLINE_CHART_TYPE);
 
         mKlineChart = (MyCombinedChart) root.findViewById(R.id.chart_kline);
         mVolumeChart = (MyBarChart) root.findViewById(R.id.chart_volume);
 
+        mKlineChart.setKlineType(mKlineType);
+        mKlineChart.setOnChartValueSelectedListener(new CoupleChartValueSelectedListener(mVolumeChart, this));
+        mVolumeChart.setOnChartValueSelectedListener(new CoupleChartValueSelectedListener(mKlineChart, this));
         getDailyKlineInfo();
     }
 
@@ -84,7 +88,7 @@ public class KlineChartFragment extends BaseTabFragment {
     }
 
     private void getDailyKlineInfo() {
-        GetFuturesDailyKlineTask request = new GetFuturesDailyKlineTask(mContext, mFuturesId,mKlineType, new Response.Listener<List<KlineItem>>() {
+        GetFuturesDailyKlineTask request = new GetFuturesDailyKlineTask(mContext, mFuturesId, mKlineType, new Response.Listener<List<KlineItem>>() {
 
             @Override
             public void onResponse(List<KlineItem> klineItemList) {
@@ -95,10 +99,11 @@ public class KlineChartFragment extends BaseTabFragment {
                             i, (float) item.mHigh,
                             (float) item.mLow,
                             (float) item.mOpen,
-                            (float) item.mClose
+                            (float) item.mClose,
+                            item
                     ));
                 }
-                CombinedData combinedData=new CombinedData();
+                CombinedData combinedData = new CombinedData();
                 MyCandleDataSet candleDataset = new MyCandleDataSet(mContext, candleEntries, "Data Set");
                 CandleData candleData = new CandleData(candleDataset);
                 combinedData.setData(candleData);
@@ -110,9 +115,9 @@ public class KlineChartFragment extends BaseTabFragment {
                 ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
                 for (int i = 0; i < klineItemList.size(); i++) {
                     KlineItem item = klineItemList.get(i);
-                    yVals1.add(new BarEntry(i, item.mVolume, item.mClose>=item.mOpen));
+                    yVals1.add(new BarEntry(i, item.mVolume, item.mClose >= item.mOpen));
                 }
-                MyBarDataSet set1 = new MyBarDataSet(mContext,yVals1, "");
+                MyBarDataSet set1 = new MyBarDataSet(mContext, yVals1, "");
                 set1.setDrawValues(false);
                 ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
                 dataSets.add(set1);
@@ -139,5 +144,28 @@ public class KlineChartFragment extends BaseTabFragment {
 
         request.setTag(this);
         mRequestQueue.add(request);
+    }
+
+    public void setHighlightListener(OnKlineHighlightListener listener) {
+        mHighlightListener = listener;
+    }
+
+    @Override
+    public void onValueSelected(Entry e, Highlight h) {
+        if (mHighlightListener != null) {
+            //Entry entry = mKlineChart.getCandleData().getEntryForHighlight(h);
+
+            ICandleDataSet dataSet = mKlineChart.getCandleData().getDataSetByIndex(0);
+            Entry entry = dataSet.getEntryForIndex((int)h.getX()-(int)dataSet.getEntryForIndex(0).getX());
+            mHighlightListener.onKlineHighlighted((KlineItem) entry.getData());
+
+        }
+    }
+
+    @Override
+    public void onNothingSelected() {
+        if (mHighlightListener != null) {
+            mHighlightListener.onKlineUnhightlighted();
+        }
     }
 }

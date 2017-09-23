@@ -13,9 +13,9 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
-import com.github.mikephil.charting.interfaces.datasets.ICandleDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.shuai.futures.MyApplication;
@@ -34,6 +34,8 @@ import com.shuai.futures.view.chart.MyBarDataSet;
 import com.shuai.futures.view.chart.MyLineChart;
 import com.shuai.futures.view.chart.MyLineDataSet;
 import com.shuai.futures.view.chart.OnTimeLineHighlightListener;
+import com.shuai.futures.view.chart.XLabelInfo;
+import com.shuai.futures.view.chart.XLabelInfoUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,6 +75,17 @@ public class TimeLineChartFragment extends BaseTabFragment implements OnChartVal
 
         mTimeLineChart.setKlineType(KlineType.KRealTime);
         mTimeLineChart.setBasePrice(mLastdayPrice);
+        XLabelInfo xLabelInfo = XLabelInfoUtil.getXLabelInfo(mFuturesId);
+        mTimeLineChart.setXLabelInfo(xLabelInfo);
+
+        //设置期货交易时长
+        if(xLabelInfo!=null) {
+            mTimeLineChart.getXAxis().setAxisMaximum(xLabelInfo.getXcount());
+            mVolumeChart.getXAxis().setAxisMaximum(xLabelInfo.getXcount());
+        }else{
+            mTimeLineChart.getXAxis().setAxisMaximum(420);
+            mVolumeChart.getXAxis().setAxisMaximum(420);
+        }
 
         mTimeLineChart.setOnChartValueSelectedListener(new CoupleChartValueSelectedListener(mVolumeChart, this));
         mVolumeChart.setOnChartValueSelectedListener(new CoupleChartValueSelectedListener(mTimeLineChart, this));
@@ -93,16 +106,23 @@ public class TimeLineChartFragment extends BaseTabFragment implements OnChartVal
 
             @Override
             public void onResponse(List<TimeLineItem> timeLineItemList) {
-                List<Entry> entries = new ArrayList<Entry>();
+                List<Entry> currentPriceEntries = new ArrayList<Entry>();
+                List<Entry> averagePriceEntries = new ArrayList<Entry>();
                 for (int i = 0; i < timeLineItemList.size(); i++) {
                     TimeLineItem item = timeLineItemList.get(i);
-                    entries.add(new Entry(i, (float) item.mCurrentPrice, item));
+                    currentPriceEntries.add(new Entry(i, (float) item.mCurrentPrice, item));
+                    averagePriceEntries.add(new Entry(i, (float) item.mAveragePrice));
                 }
-                MyLineDataSet dataSet = new MyLineDataSet(mContext, entries, "Label"); // add entries to dataset
+                MyLineDataSet dataSet = new MyLineDataSet(mContext, currentPriceEntries, "current price"); // add currentPriceEntries to dataset
                 LineData lineData = new LineData(dataSet);
+                LineDataSet averageDataSet=new LineDataSet(averagePriceEntries,"average price");
+                averageDataSet.setDrawCircleHole(false);
+                averageDataSet.setDrawCircles(false);
+                averageDataSet.setDrawValues(false);
+                averageDataSet.setLineWidth(1);
+                averageDataSet.setColor(getResources().getColor(R.color.chart_average_price));
+                lineData.addDataSet(averageDataSet);
                 mTimeLineChart.setData(lineData);
-                //TODO：期货交易时长
-                mTimeLineChart.getXAxis().setAxisMaximum(420);
                 mTimeLineChart.invalidate();
 
                 ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
@@ -116,8 +136,6 @@ public class TimeLineChartFragment extends BaseTabFragment implements OnChartVal
                 dataSets.add(set1);
                 BarData data = new BarData(dataSets);
                 mVolumeChart.setData(data);
-                //TODO：期货交易时长
-                mVolumeChart.getXAxis().setAxisMaximum(420);
                 mVolumeChart.invalidate();
 
                 mTimeLineChart.setOnChartGestureListener(new CoupleChartGestureListener(

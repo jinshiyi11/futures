@@ -28,7 +28,7 @@ public class MyLineDataSet extends LineDataSet {
         setLineWidth(1);
         setColor(0xff3b7fed);
         setFillColor(0xffe2ecfc);
-        setFillAlpha(255);
+        setFillAlpha(0x77);
         setDrawFilled(true);
         setHighLightColor(mContext.getResources().getColor(R.color.chart_highlight));
     }

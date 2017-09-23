@@ -62,11 +62,9 @@ public class MyCombinedChart extends CombinedChart {
 
 
         setScaleEnabled(false);
-
         setNoDataText(null);
         setDescription(null);
         getLegend().setEnabled(false);
-        setScaleEnabled(false);
         setPinchZoom(false);
         setDrawBorders(true);
         setBorderColor(getResources().getColor(R.color.chart_border));
@@ -107,6 +105,7 @@ public class MyCombinedChart extends CombinedChart {
                 }
                 if (mShowMa5) {
                     LineDataSet lineDataSet = new LineDataSet(createMa(dataList, 5), null);
+                    lineDataSet.setDrawValues(false);
                     lineDataSet.setHighlightEnabled(false);
                     lineDataSet.setColor(getResources().getColor(R.color.chart_ma5));
                     lineDataSet.setDrawCircleHole(false);
@@ -116,6 +115,7 @@ public class MyCombinedChart extends CombinedChart {
 
                 if (mShowMa10) {
                     LineDataSet lineDataSet = new LineDataSet(createMa(dataList, 10), null);
+                    lineDataSet.setDrawValues(false);
                     lineDataSet.setHighlightEnabled(false);
                     lineDataSet.setColor(getResources().getColor(R.color.chart_ma10));
                     lineDataSet.setDrawCircleHole(false);
@@ -125,6 +125,7 @@ public class MyCombinedChart extends CombinedChart {
 
                 if (mShowMa20) {
                     LineDataSet lineDataSet = new LineDataSet(createMa(dataList, 20), null);
+                    lineDataSet.setDrawValues(false);
                     lineDataSet.setHighlightEnabled(false);
                     lineDataSet.setColor(getResources().getColor(R.color.chart_ma20));
                     lineDataSet.setDrawCircleHole(false);
@@ -134,6 +135,7 @@ public class MyCombinedChart extends CombinedChart {
 
                 if (mShowMa30) {
                     LineDataSet lineDataSet = new LineDataSet(createMa(dataList, 30), null);
+                    lineDataSet.setDrawValues(false);
                     lineDataSet.setHighlightEnabled(false);
                     lineDataSet.setColor(getResources().getColor(R.color.chart_ma30));
                     lineDataSet.setDrawCircleHole(false);

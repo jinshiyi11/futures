@@ -10,6 +10,7 @@ import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.renderer.XAxisRenderer;
 import com.shuai.futures.R;
 
 /**
@@ -17,6 +18,8 @@ import com.shuai.futures.R;
  */
 public class MyLineChart extends LineChart {
     private double mBasePrice = 0;
+    private LineYAxisRenderer mLeftRender;
+    private LineYAxisRenderer mRightRender;
     private LineLeftAxisValueFormatter mLeftValueFormatter;
     private LineRightAxisValueFormatter mRightValueFormatter;
     private KlineType mKlineType;
@@ -41,8 +44,10 @@ public class MyLineChart extends LineChart {
         mRenderer = new MyLineChartRenderer(this, mAnimator, mViewPortHandler);
         mChartTouchListener=new MyChartTouchListener(this, mViewPortHandler.getMatrixTouch(), 3f);
         setHighlightPerTapEnabled(false);
-        setRendererLeftYAxis(new LineYAxisRenderer(mViewPortHandler, mAxisLeft, mLeftAxisTransformer));
-        setRendererRightYAxis(new LineYAxisRenderer(mViewPortHandler, mAxisRight, mRightAxisTransformer));
+        mLeftRender=new LineYAxisRenderer(mViewPortHandler, mAxisLeft, mLeftAxisTransformer);
+        setRendererLeftYAxis(mLeftRender);
+        mRightRender=new LineYAxisRenderer(mViewPortHandler, mAxisRight, mRightAxisTransformer);
+        setRendererRightYAxis(mRightRender);
 
         setScaleEnabled(false);
 
@@ -86,6 +91,12 @@ public class MyLineChart extends LineChart {
     public void setBasePrice(double basePrice) {
         mBasePrice = basePrice;
         mRightValueFormatter.setBasePrice(mBasePrice);
+        mLeftRender.setBasePrice(mBasePrice);
+        mRightRender.setBasePrice(mBasePrice);
+        int upColor=getResources().getColor(R.color.up);
+        int downColor=getResources().getColor(R.color.down);
+        mLeftRender.setColor(upColor,downColor);
+        mRightRender.setColor(upColor,downColor);
 
         LimitLine baseLine = new LimitLine((float) mBasePrice);
         baseLine.setLineColor(getResources().getColor(R.color.chart_base_line));
@@ -99,6 +110,11 @@ public class MyLineChart extends LineChart {
 
 //        getXAxis().setValueFormatter(new KlineXAxisValueFormatter(this, mKlineType));
         setXAxisRenderer(new MyXAxisRenderer(this, mKlineType, mViewPortHandler, mXAxis, mLeftAxisTransformer));
+    }
+
+    public void setXLabelInfo(XLabelInfo xLabelInfo) {
+        MyXAxisRenderer xAxisRenderer = (MyXAxisRenderer) getRendererXAxis();
+        xAxisRenderer.setXLabelInfo(xLabelInfo);
     }
 
     @Override

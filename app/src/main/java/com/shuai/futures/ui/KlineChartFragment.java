@@ -44,7 +44,6 @@ import java.util.List;
 /**
  *
  */
-
 public class KlineChartFragment extends BaseTabFragment implements OnChartValueSelectedListener {
     public static final String KEY_KLINE_CHART_TYPE = "key_kline_chart_type";
     private RequestQueue mRequestQueue;
@@ -72,6 +71,13 @@ public class KlineChartFragment extends BaseTabFragment implements OnChartValueS
 
         mKlineChart = (MyCombinedChart) root.findViewById(R.id.chart_kline);
         mVolumeChart = (MyBarChart) root.findViewById(R.id.chart_volume);
+
+        mKlineChart.setScaleXEnabled(true);
+        mKlineChart.setScaleYEnabled(false);
+        mKlineChart.getViewPortHandler().setMaximumScaleX(10);
+        mVolumeChart.setScaleXEnabled(true);
+        mVolumeChart.setScaleYEnabled(false);
+        mVolumeChart.getViewPortHandler().setMaximumScaleX(10);
 
         mKlineChart.setKlineType(mKlineType);
         mKlineChart.setOnChartValueSelectedListener(new CoupleChartValueSelectedListener(mVolumeChart, this));

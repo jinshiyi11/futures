@@ -10,6 +10,7 @@
     <color name="chart_grid">#dddddd</color>
     <color name="chart_base_line">#cfd5e0</color>
     <color name="chart_highlight">#c1c1c1</color>
+    <color name="chart_average_price">#ffc653</color>
 
     <color name="chart_ma5">#cd4343</color>
     <color name="chart_ma10">#8c3037</color>

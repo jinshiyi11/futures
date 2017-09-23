@@ -2,6 +2,7 @@ package com.shuai.futures.view.chart;
 
 
 import android.graphics.Matrix;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -59,6 +60,11 @@ public class MyChartTouchListener extends BarLineChartTouchListener {
     public void onShowPress(MotionEvent e) {
         super.onShowPress(e);
 
+        if (mTouchMode == DRAG) {
+            //已经进入滑动模式，滑动模式和highlight二选一
+            return;
+        }
+
         mInHighlightMode = true;
         Highlight h = mChart.getHighlightByTouchPoint(e.getX(), e.getY());
         performHighlight(h, e);
@@ -73,11 +79,6 @@ public class MyChartTouchListener extends BarLineChartTouchListener {
 //        Highlight h = mChart.getHighlightByTouchPoint(e.getX(), e.getY());
 //        performHighlight(h, e);
 
-    }
-
-    @Override
-    public boolean onSingleTapUp(MotionEvent e) {
-        return super.onSingleTapUp(e);
     }
 
     /**

@@ -5,8 +5,6 @@ import android.graphics.Canvas;
 import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.data.CandleData;
-import com.github.mikephil.charting.data.CandleEntry;
 import com.github.mikephil.charting.interfaces.datasets.ICandleDataSet;
 import com.github.mikephil.charting.renderer.XAxisRenderer;
 import com.github.mikephil.charting.utils.MPPointF;
@@ -16,9 +14,7 @@ import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.shuai.futures.data.KlineItem;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-
-import static android.R.attr.max;
+import java.util.List;
 
 /**
  *
@@ -27,6 +23,7 @@ import static android.R.attr.max;
 public class MyXAxisRenderer extends XAxisRenderer {
     private Chart mChart;
     private KlineType mKlineType;
+    private XLabelInfo mCustomLabelInfo;
 
     public MyXAxisRenderer(Chart chart, KlineType klineType, ViewPortHandler viewPortHandler, XAxis xAxis, Transformer trans) {
         super(viewPortHandler, xAxis, trans);
@@ -34,9 +31,24 @@ public class MyXAxisRenderer extends XAxisRenderer {
         mKlineType = klineType;
     }
 
+    public void setXLabelInfo(XLabelInfo xLabelInfo) {
+        mCustomLabelInfo = xLabelInfo;
+        if (mCustomLabelInfo != null) {
+            List<XLabelInfo.Label> labels = mCustomLabelInfo.getLabels();
+            mAxis.mEntries = new float[labels.size()];
+            for (int i = 0; i < labels.size(); ++i) {
+                XLabelInfo.Label item = labels.get(i);
+                mAxis.mEntries[i] = item.getX();
+            }
+            mAxis.mEntryCount = labels.size();
+        }
+    }
+
     @Override
     protected void computeAxisValues(float min, float max) {
-        computeAxisValuesInternal(min, max);
+        if (mCustomLabelInfo == null) {
+            computeAxisValuesInternal(min, max);
+        }
         computeSize();
     }
 
@@ -261,8 +273,12 @@ public class MyXAxisRenderer extends XAxisRenderer {
             float x = positions[i];
 
             if (mViewPortHandler.isInBoundsX(x)) {
-
-                String label = mXAxis.getValueFormatter().getFormattedValue(mXAxis.mEntries[i / 2], mXAxis);
+                String label;
+                if (mCustomLabelInfo == null) {
+                    label = mXAxis.getValueFormatter().getFormattedValue(mXAxis.mEntries[i / 2], mXAxis);
+                } else {
+                    label = mCustomLabelInfo.getLabels().get(i / 2).getLabel();
+                }
 
                 if (mXAxis.isAvoidFirstLastClippingEnabled()) {
 

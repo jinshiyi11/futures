@@ -27,7 +27,7 @@ public class TimeLineXAxisValueFormatter implements IAxisValueFormatter {
                 Entry entry = dataSet.getEntryForIndex(index);
                 TimeLineItem data = (TimeLineItem) entry.getData();
 
-                return data.mMinuteSecond;
+                return data.mHourMinute;
             }
         }
         return String.valueOf(value);

@@ -12,6 +12,7 @@ import com.github.mikephil.charting.utils.Transformer;
 import com.github.mikephil.charting.utils.Utils;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.shuai.futures.data.KlineItem;
+import com.shuai.futures.protocol.XLabelInfo;
 
 import java.util.ArrayList;
 import java.util.List;

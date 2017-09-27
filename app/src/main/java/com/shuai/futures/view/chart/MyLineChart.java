@@ -10,8 +10,8 @@ import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.renderer.XAxisRenderer;
 import com.shuai.futures.R;
+import com.shuai.futures.protocol.XLabelInfo;
 
 /**
  *

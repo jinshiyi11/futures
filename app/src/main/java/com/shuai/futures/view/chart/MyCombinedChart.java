@@ -87,6 +87,10 @@ public class MyCombinedChart extends CombinedChart {
         setMinOffset(0);
         setExtraBottomOffset(5);
         setAutoScaleMinMaxEnabled(true);
+
+        //防止第一个和最后一个candle只画一半
+        getXAxis().setSpaceMin(0.5f);
+        getXAxis().setSpaceMax(0.5f);
     }
 
     @Override

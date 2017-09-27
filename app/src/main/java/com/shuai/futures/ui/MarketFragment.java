@@ -96,7 +96,7 @@ public class MarketFragment extends BaseTabFragment {
 
     @Override
     public void onDestroyView() {
-        mHandler.removeCallbacks(null);
+        mHandler.removeCallbacksAndMessages(null);
         if (mRequestQueue != null) {
             mRequestQueue.cancelAll(this);
         }
@@ -155,15 +155,7 @@ public class MarketFragment extends BaseTabFragment {
     }
 
     private void getFuturesPrice() {
-        List<FuturesInfo> idList = new ArrayList<>();
-        if (mFuturesPriceList.size() == 0) {
-            if(mFuturesInfoList.size()>50) {
-                idList=mFuturesInfoList.subList(0,50);
-            }else{
-                idList=mFuturesInfoList;
-            }
-        }
-        GetFuturesPriceListTask request = new GetFuturesPriceListTask(mContext, idList, new Response.Listener<List<FuturesPrice>>() {
+        GetFuturesPriceListTask request = new GetFuturesPriceListTask(mContext, mFuturesInfoList, new Response.Listener<List<FuturesPrice>>() {
 
             @Override
             public void onResponse(List<FuturesPrice> futuresPrices) {

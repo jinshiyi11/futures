@@ -11,8 +11,6 @@ import com.shuai.futures.R;
 import com.shuai.futures.data.TimeLineItem;
 import com.shuai.futures.utils.ColorUtils;
 
-import static android.R.attr.textColor;
-
 /**
  *
  */
@@ -61,7 +59,7 @@ public class TimeLineHead extends LinearLayout {
         String tpl=getResources().getString(R.string.price_tpl);
         String color= ColorUtils.toHtmlColor(textColor);
 
-        mTvTime.setText(item.mMinuteSecond);
+        mTvTime.setText(item.mHourMinute);
         mTvPrice.setText(Html.fromHtml(String.format(tpl,"价 ",color,String.valueOf(item.mCurrentPrice))));
         double percent = diff / lastdayPrice * 100;
         String percentText=diff >= 0 ? String.format("+%.2f%%", percent) : String.format("%.2f%%", percent);

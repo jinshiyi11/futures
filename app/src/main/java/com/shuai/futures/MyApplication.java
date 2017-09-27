@@ -9,10 +9,8 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.reflect.TypeToken;
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -20,36 +18,27 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.shuai.futures.data.Config;
 import com.shuai.futures.data.Constants;
-import com.shuai.futures.data.FuturesInfo;
 import com.shuai.futures.data.HttpResponseCache;
 import com.shuai.futures.logic.UserManager;
 import com.shuai.futures.net.ConnectionChangeMonitor;
 import com.shuai.futures.net.CustomImageDownloader;
 import com.shuai.futures.net.MyHttpStack;
+import com.shuai.futures.protocol.XDataProcesser;
 import com.shuai.futures.utils.AppUtils;
 import com.shuai.futures.utils.ProcessUtils;
 import com.shuai.futures.utils.StorageUtils;
-import com.shuai.futures.view.chart.XLabelInfo;
+import com.shuai.futures.protocol.XLabelInfo;
 import com.umeng.analytics.MobclickAgent;
 
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import de.greenrobot.event.EventBus;
-
-import static android.R.attr.type;
 
 public class MyApplication extends Application {
     private static final String TAG = MyApplication.class.getSimpleName();
 
     private static Context mContext;
-    private static Map<String, XLabelInfo> mXLabelMap = new HashMap<>();
 
 
     /**
@@ -69,10 +58,6 @@ public class MyApplication extends Application {
 
     public static Context getAppContext() {
         return mContext;
-    }
-
-    public static Map<String, XLabelInfo> getXLabelMap() {
-        return mXLabelMap;
     }
 
     @Override
@@ -172,20 +157,7 @@ public class MyApplication extends Application {
     private void loadXLabels() {
         try {
             String fileData = StorageUtils.getAssetUTF8FileData(this, "document.json");
-            Gson gson = new Gson();
-            JsonParser parser = new JsonParser();
-            JsonArray array = parser.parse(fileData).getAsJsonArray();
-            for (int i = 0; i < array.size(); ++i) {
-                JsonObject element = (JsonObject) array.get(i);
-                String[] keys = element.get("key").getAsString().toLowerCase().split(",");
-                XLabelInfo item = gson.fromJson(element.get("data"), XLabelInfo.class);
-                for (String key : keys) {
-                    if (mXLabelMap.get(key) != null) {
-                        Log.e(TAG, "duplicate key!");
-                    }
-                    mXLabelMap.put(key, item);
-                }
-            }
+            XDataProcesser.getInstance().setXLabelInfoMap(fileData);
         } catch (Exception e) {
             e.printStackTrace();
         }

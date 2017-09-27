@@ -134,7 +134,7 @@ public class CandleStickActivity extends BaseFragmentActivity implements OnTimeL
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mHandler.removeCallbacks(null);
+        mHandler.removeCallbacksAndMessages(null);
         if (mRequestQueue != null) {
             mRequestQueue.cancelAll(this);
         }

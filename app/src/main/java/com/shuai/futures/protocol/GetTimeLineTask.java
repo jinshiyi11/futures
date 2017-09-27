@@ -23,10 +23,12 @@ import java.util.List;
  */
 public class GetTimeLineTask extends BaseTask<List<TimeLineItem>> {
     private static final String TAG = GetTimeLineTask.class.getSimpleName();
-    private SimpleDateFormat mFormat = new SimpleDateFormat("mm:ss");
+    private SimpleDateFormat mFormat = new SimpleDateFormat("HH:mm");
+    private String mFutureId;
 
     public GetTimeLineTask(Context context, String futureId, Listener<List<TimeLineItem>> listener, Response.ErrorListener errorListener) {
         super(Method.GET, getUrl(futureId), null, listener, errorListener);
+        mFutureId=futureId;
     }
 
     private static String getUrl(String futureId) {
@@ -50,14 +52,16 @@ public class GetTimeLineTask extends BaseTask<List<TimeLineItem>> {
             for (int i = 0; i < root.length(); i++) {
                 JSONArray itemJson = root.getJSONArray(i);
                 TimeLineItem item = new TimeLineItem();
-                item.mMinuteSecond = itemJson.getString(0);
-                item.mDate=mFormat.parse(item.mMinuteSecond);
+                item.mHourMinute = itemJson.getString(0);
+                item.mDate = mFormat.parse(item.mHourMinute);
                 item.mCurrentPrice = Double.parseDouble(itemJson.getString(1));
                 item.mAveragePrice = Double.parseDouble(itemJson.getString(2));
                 item.mTurnover = Integer.parseInt(itemJson.getString(3));
                 item.mVolume = Integer.parseInt(itemJson.getString(4));
                 result.add(item);
             }
+
+            result= XDataProcesser.getInstance().fixData(result,mFutureId);
 
             return Response.success(result, HttpHeaderParser.parseCacheHeaders(response));
         } catch (UnsupportedEncodingException e) {

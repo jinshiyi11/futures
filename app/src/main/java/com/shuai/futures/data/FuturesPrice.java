@@ -7,6 +7,9 @@ public class FuturesPrice {
     public String mId;
     public String mName;
     public double mCurrentPrice;
+    /**
+     * 昨结算
+     */
     public double mLastdayPrice;
 
     public double mHigh;

@@ -26,7 +26,6 @@ import com.shuai.futures.data.LoginStateChanged;
 import com.shuai.futures.logic.UserManager;
 import com.shuai.futures.net.ConnectionChangeMonitor;
 import com.shuai.futures.ui.base.BaseFragmentActivity;
-import com.shuai.futures.utils.DisplayUtils;
 import com.shuai.futures.utils.NavigateUtils;
 
 import java.util.ArrayList;
@@ -234,7 +233,7 @@ public class MainActivity extends BaseFragmentActivity {
         String[] tabIds = {"followed", "market", "news", "user"};
         int[] titles = {R.string.tab_followed, R.string.tab_market, R.string.tab_news, R.string.tab_user};
         int[] icons = {R.drawable.tab_followed, R.drawable.tab_market, R.drawable.tab_news, R.drawable.tab_user};
-        Class<?>[] fragments = {FollowedFragment.class, MarketFragment.class, NewsFragment.class,
+        Class<?>[] fragments = {FollowFragment.class, MarketFragment.class, NewsFragment.class,
                 UserCenterFragment.class};
 
         LayoutInflater inflater = getLayoutInflater();

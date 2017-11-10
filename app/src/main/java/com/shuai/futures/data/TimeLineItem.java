@@ -8,7 +8,15 @@ import java.util.Date;
 public class TimeLineItem implements Cloneable {
     public String mHourMinute;
     public Date mDate;
+
+    /**
+     * 当前
+     */
     public double mCurrentPrice;
+
+    /**
+     * 均价
+     */
     public double mAveragePrice;
     /**
      * 成交
@@ -76,5 +84,17 @@ public class TimeLineItem implements Cloneable {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public String toString() {
+        return "TimeLineItem{" +
+                "mHourMinute='" + mHourMinute + '\'' +
+                ", mDate=" + mDate +
+                ", mCurrentPrice=" + mCurrentPrice +
+                ", mAveragePrice=" + mAveragePrice +
+                ", mTurnover=" + mTurnover +
+                ", mVolume=" + mVolume +
+                '}';
     }
 }

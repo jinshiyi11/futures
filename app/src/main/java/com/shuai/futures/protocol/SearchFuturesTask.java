@@ -9,23 +9,31 @@ import com.android.volley.Response;
 import com.android.volley.Response.Listener;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import com.shuai.futures.data.Constants;
 import com.shuai.futures.data.FuturesInfo;
+import com.shuai.futures.data.UserInfo;
+import com.shuai.futures.logic.UserManager;
+
+import org.apache.http.message.BasicNameValuePair;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
-public class GetFuturesListTask extends BaseTask<List<FuturesInfo>> {
-    private static final String TAG = GetFuturesListTask.class.getSimpleName();
+public class SearchFuturesTask extends BaseTask<List<FuturesInfo>> {
+    private static final String TAG = SearchFuturesTask.class.getSimpleName();
 
-    public GetFuturesListTask(Context context, Listener<List<FuturesInfo>> listener, Response.ErrorListener errorListener) {
-        super(Method.GET, UrlHelper.getUrl(context, "data/futures_list.json"),
-                null, listener, errorListener);
+    public SearchFuturesTask(Context context, String key, Listener<List<FuturesInfo>> listener, Response.ErrorListener errorListener) {
+        super(Method.GET, getUrl(context, key), null, listener, errorListener);
+    }
+
+    private static String getUrl(Context context, String key) {
+        List<BasicNameValuePair> params = new LinkedList<BasicNameValuePair>();
+        params.add(new BasicNameValuePair("key", key));
+        return UrlHelper.getUrl(context, "api/searchFutures", params);
     }
 
     @Override
@@ -36,17 +44,10 @@ public class GetFuturesListTask extends BaseTask<List<FuturesInfo>> {
                 Log.d(TAG, jsonString);
             }
 
-            JsonParser parser=new JsonParser();
-            JsonObject root = parser.parse(jsonString).getAsJsonObject();
-            ErrorInfo error = ProtocolUtils.getProtocolInfo(root);
-            if (error.getErrorCode() != 0) {
-                return Response.error(error);
-            }
-
             Gson gson = new Gson();
             Type type = new TypeToken<ArrayList<FuturesInfo>>() {
             }.getType();
-            List<FuturesInfo> result = gson.fromJson(root.get(ProtocolUtils.DATA), type);
+            List<FuturesInfo> result = gson.fromJson(jsonString, type);
             if (result == null) {
                 return Response.error(new ParseError());
             }

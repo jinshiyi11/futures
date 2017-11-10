@@ -15,6 +15,18 @@ import org.json.JSONObject;
 
 public class ProtocolUtils {
 	public static final String TAG=ProtocolUtils.class.getSimpleName();
+
+	/**
+	 * data节点
+	 */
+	public static final String DATA="data";
+
+	public static ErrorInfo getProtocolInfo(JsonObject root) {
+		int errorCode=root.get("code").getAsInt();
+		String errorMessage=root.get("msg").getAsString();
+		ErrorInfo error=new ErrorInfo(errorCode, errorMessage);
+		return error;
+	}
 	
 	public static ErrorInfo getErrorInfo(VolleyError error){
 		Log.e(TAG, error.toString());

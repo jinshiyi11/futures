@@ -25,7 +25,12 @@ import com.shuai.futures.data.Config;
 import com.shuai.futures.data.Constants;
 import com.shuai.futures.data.Stat;
 import com.shuai.futures.logic.UserManager;
+import com.shuai.futures.protocol.LoginByAccountTask;
+import com.shuai.futures.protocol.LoginResult;
 import com.shuai.futures.protocol.ProtocolUtils;
+import com.shuai.futures.protocol.RegisterByWeixinTask;
+import com.shuai.futures.protocol.RegisterResult;
+import com.shuai.futures.protocol.TokenInfo;
 import com.shuai.futures.ui.base.BaseActivity;
 import com.shuai.futures.utils.UiUtils;
 import com.shuai.futures.utils.Utils;
@@ -51,8 +56,8 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
     private LinearLayout mLlWeixinLogin;
     
     private RequestQueue mRequestQueue;
-//    private RegisterByWeixinTask mLoginByWeixinTask;
-//    private LoginResultListener mLoginResultListener;
+    private RegisterByWeixinTask mLoginByWeixinTask;
+    private UserManager.LoginResultListener mLoginResultListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +69,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
         setContentView(R.layout.activity_login);
         
         mRequestQueue= MyApplication.getRequestQueue();
-//        mLoginTargetIntent=getIntent().getParcelableExtra(Constants.EXTRA_LOGIN_TARGET_INTENT);
+        mLoginTargetIntent=getIntent().getParcelableExtra(Constants.EXTRA_LOGIN_TARGET_INTENT);
         
         mTvRegister=(TextView) findViewById(R.id.tv_register);
         mTvFindPassword=(TextView) findViewById(R.id.tv_find_password);
@@ -106,33 +111,34 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
               
         });  
         
-//        mLoginResultListener=new LoginResultListener() {
-//
-//			@Override
-//			public void onLoginResult(LoginResult result) {
-//				if(result.isLoginSuccess()){
-//					if(mLoginTargetIntent!=null){
-//						startActivity(mLoginTargetIntent);
-//					}
-//
-//					setResult(RESULT_OK);
-//					finish();
-//				}
-//
-//			}
-//		};
-//
-//		UserManager.getInstance().addLoginResultListener(mLoginResultListener);
+        mLoginResultListener=new UserManager.LoginResultListener() {
+
+			@Override
+			public void onLoginResult(LoginResult result) {
+				if(result.isLoginSuccess()){
+					if(mLoginTargetIntent!=null){
+						startActivity(mLoginTargetIntent);
+					}
+
+					setResult(RESULT_OK);
+					finish();
+				}
+
+			}
+		};
+
+		UserManager.getInstance().addLoginResultListener(mLoginResultListener);
     }
 
     @Override
 	protected void onDestroy() { 
-//    	if(mLoginResultListener!=null){
-//    		UserManager.getInstance().removeLoginResultListener(mLoginResultListener);
-//    	}
+    	if(mLoginResultListener!=null){
+    		UserManager.getInstance().removeLoginResultListener(mLoginResultListener);
+    	}
     	mRequestQueue.cancelAll(this);
-//    	if(mLoginByWeixinTask!=null)
-//    		mLoginByWeixinTask.cancel();
+    	if(mLoginByWeixinTask!=null) {
+            mLoginByWeixinTask.cancel();
+        }
     	
 		super.onDestroy();
 	}
@@ -184,46 +190,46 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 			return;
 		}
     	
-//    	final String md5Password=Utils.md5(password);
-//    	LoginByAccountTask request=new LoginByAccountTask(this,UserManager.LOGIN_BY_PHONE,account,md5Password,new Listener<TokenInfo>() {
-//
-//			@Override
-//			public void onResponse(TokenInfo tokenInfo) {
-//				UserManager.getInstance().onLoginByPhoneSuccess(tokenInfo.getUid(),account,md5Password, tokenInfo.getToken());
-//			}
-//		},new ErrorListener(){
-//
-//			@Override
-//			public void onErrorResponse(VolleyError error) {
-//				Utils.showShortToast(mContext, ProtocolUtils.getErrorInfo(error).getErrorMessage());
-//			}
-//
-//		});
-//
-//		request.setTag(this);
-//        mRequestQueue.add(request);
+    	final String md5Password=Utils.md5(password);
+    	LoginByAccountTask request=new LoginByAccountTask(this,UserManager.LOGIN_BY_PHONE,account,md5Password,new Listener<TokenInfo>() {
+
+			@Override
+			public void onResponse(TokenInfo tokenInfo) {
+				UserManager.getInstance().onLoginByPhoneSuccess(tokenInfo.getUid(),account,md5Password, tokenInfo.getToken());
+			}
+		},new ErrorListener(){
+
+			@Override
+			public void onErrorResponse(VolleyError error) {
+				Utils.showShortToast(mContext, ProtocolUtils.getErrorInfo(error).getErrorMessage());
+			}
+
+		});
+
+		request.setTag(this);
+        mRequestQueue.add(request);
     }
     
     /**
      * 通过微信登录
      */
     private void loginByWeixin(){
-//    	mLoginByWeixinTask=new RegisterByWeixinTask(this, new Listener<RegisterResult>() {
-//
-//			@Override
-//			public void onResponse(RegisterResult result) {
-//				UserManager.getInstance().onRegisterByWeixinSuccess(result.getUid(), Utils.md5(result.getPassword()));
-//			}
-//		},new ErrorListener(){
-//
-//			@Override
-//			public void onErrorResponse(VolleyError error) {
-//				Utils.showShortToast(mContext, ProtocolUtils.getErrorInfo(error).getErrorMessage());
-//			}
-//
-//		});
-//
-//    	mLoginByWeixinTask.login();
+    	mLoginByWeixinTask=new RegisterByWeixinTask(this, new Listener<RegisterResult>() {
+
+			@Override
+			public void onResponse(RegisterResult result) {
+				UserManager.getInstance().onRegisterByWeixinSuccess(result.getUid(), Utils.md5(result.getPassword()));
+			}
+		},new ErrorListener(){
+
+			@Override
+			public void onErrorResponse(VolleyError error) {
+				Utils.showShortToast(mContext, ProtocolUtils.getErrorInfo(error).getErrorMessage());
+			}
+
+		});
+
+    	mLoginByWeixinTask.login();
     }
     
 }

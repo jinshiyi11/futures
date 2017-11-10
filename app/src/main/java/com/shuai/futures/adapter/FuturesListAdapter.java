@@ -30,7 +30,7 @@ public class FuturesListAdapter extends ArrayAdapter<FuturesPrice> {
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
-    private class ViewHolder {
+    private static class ViewHolder {
         TextView mTvName;
         TextView mTvId;
         TextView mTvCurrentPrice;

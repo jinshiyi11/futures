@@ -17,9 +17,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.shuai.futures.MyApplication;
 import com.shuai.futures.R;
 import com.shuai.futures.data.Constants;
+import com.shuai.futures.logic.UserManager;
+import com.shuai.futures.protocol.ProtocolUtils;
+import com.shuai.futures.protocol.RegisterByPhoneTask;
+import com.shuai.futures.protocol.TokenInfo;
 import com.shuai.futures.ui.base.BaseActivity;
 import com.shuai.futures.utils.UiUtils;
 import com.shuai.futures.utils.Utils;
@@ -41,7 +47,7 @@ public class RegisterByPhoneActivity extends BaseActivity implements
 	private EditText mEtVerifyCode;
 	private LinearLayout mLlPassword;
 	private EditText mEtPassword;
-	//private EditText mEtConfirmPassword;
+//	private EditText mEtConfirmPassword;
 
 	private Handler mHandler = new Handler();
 	private RequestQueue mRequestQueue;
@@ -69,7 +75,7 @@ public class RegisterByPhoneActivity extends BaseActivity implements
 		mEtVerifyCode = (EditText) findViewById(R.id.et_sms);
 		mLlPassword=(LinearLayout) findViewById(R.id.ll_password);
 		mEtPassword = (EditText) findViewById(R.id.et_password);
-		//mEtConfirmPassword = (EditText) findViewById(R.id.et_confirm_password);
+//		mEtConfirmPassword = (EditText) findViewById(R.id.et_confirm_password);
 
 		mBtnGetVerifyCode.setOnClickListener(this);
 		mBtnRegister.setOnClickListener(this);
@@ -190,30 +196,30 @@ public class RegisterByPhoneActivity extends BaseActivity implements
 //			return;
 //		}
 
-//		final String md5Password=Utils.md5(password);
-//		RegisterByPhoneTask request=new RegisterByPhoneTask(this,phone,verifyCode,md5Password,null,new Listener<TokenInfo>() {
-//
-//			@Override
-//			public void onResponse(TokenInfo result) {
-//				if(mIsFindPassword){
-//					Utils.showLongToast(mContext,"成功找回密码");
-//				}else if(mIsModifyPassword){
-//					Utils.showLongToast(mContext,"成功修改密码");
-//				}
-//
-//				UserManager.getInstance().onRegisterByPhoneSuccess(result.getUid(),result.getToken(),phone, md5Password);
-//				finish();
-//			}
-//		},new ErrorListener(){
-//
-//			@Override
-//			public void onErrorResponse(VolleyError error) {
-//				Utils.showLongToast(mContext, ProtocolUtils.getErrorInfo(error).getErrorMessage());
-//			}
-//
-//		});
-//		request.setTag(this);
-//        mRequestQueue.add(request);
+		final String md5Password=Utils.md5(password);
+		RegisterByPhoneTask request=new RegisterByPhoneTask(this,phone,verifyCode,md5Password,null,new Response.Listener<TokenInfo>() {
+
+			@Override
+			public void onResponse(TokenInfo result) {
+				if(mIsFindPassword){
+					Utils.showLongToast(mContext,"成功找回密码");
+				}else if(mIsModifyPassword){
+					Utils.showLongToast(mContext,"成功修改密码");
+				}
+
+				UserManager.getInstance().onRegisterByPhoneSuccess(result.getUid(),result.getToken(),phone, md5Password);
+				finish();
+			}
+		},new Response.ErrorListener(){
+
+			@Override
+			public void onErrorResponse(VolleyError error) {
+				Utils.showLongToast(mContext, ProtocolUtils.getErrorInfo(error).getErrorMessage());
+			}
+
+		});
+		request.setTag(this);
+        mRequestQueue.add(request);
 	}
 
 }

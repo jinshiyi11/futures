@@ -6,7 +6,6 @@ import android.os.Handler;
 /**
  *
  */
-
 public class Config {
     private Context mContext;
     private Handler mHandler;
@@ -18,7 +17,7 @@ public class Config {
 
     public void init(Context context) {
         mContext = context;
-        mHandler=new Handler();
+        mHandler = new Handler();
     }
 
     public static Config getInstance() {
@@ -41,7 +40,13 @@ public class Config {
         return "测试 验证码：(\\d{4})";
     }
 
+
+    public void setLastLogoutAccount(String lastLogoutAccount) {
+//        mData.mLastLogoutAccount=lastLogoutAccount;
+    }
+
     public String getLastLogoutAccount() {
         return null;
+//        return mData.mLastLogoutAccount;
     }
 }

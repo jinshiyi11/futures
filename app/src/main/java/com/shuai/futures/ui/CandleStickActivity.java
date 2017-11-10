@@ -47,7 +47,6 @@ import java.util.List;
  *
  */
 public class CandleStickActivity extends BaseFragmentActivity implements OnTimeLineHighlightListener, OnKlineHighlightListener {
-    private Context mContext;
     private String mFuturesId;
     private String mFuturesName;
     private LoadingStatus mStatus = LoadingStatus.STATUS_LOADING;
@@ -90,7 +89,6 @@ public class CandleStickActivity extends BaseFragmentActivity implements OnTimeL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_candlestick);
 
-        mContext = this;
         Intent intent = getIntent();
         mFuturesId = intent.getStringExtra(Constants.EXTRA_FUTURES_ID);
         mTvTitle = (TextView) findViewById(R.id.tv_title);
@@ -165,7 +163,7 @@ public class CandleStickActivity extends BaseFragmentActivity implements OnTimeL
 
     private void getFuturesPrice() {
         List<FuturesInfo> futures = new ArrayList<>();
-        futures.add(new FuturesInfo(mFuturesId));
+        futures.add(new FuturesInfo(mFuturesId, null, null));
         GetFuturesPriceListTask request = new GetFuturesPriceListTask(mContext, futures, new Response.Listener<List<FuturesPrice>>() {
 
             @Override

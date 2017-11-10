@@ -10,6 +10,15 @@ import java.util.HashMap;
  * 统计的事件
  */
 public class Stat {
+	/**
+	 * token超时次数
+	 */
+	public static final String EVENT_TOKEN_TIMEOUT = "38";
+
+	/**
+	 * token超时然后重新登录次数
+	 */
+	public static final String EVENT_TOKEN_TIMEOUT_AND_RELOGIN = "39";
     
     public static void onEvent(Context context, String event){
     	MobclickAgent.onEvent(context,event);

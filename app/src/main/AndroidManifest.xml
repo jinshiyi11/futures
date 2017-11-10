@@ -26,6 +26,11 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".ui.SearchActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
             android:name=".ui.LoginActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" >

@@ -19,6 +19,7 @@
 
     <color name="divider">#dadada</color>
     <color name="item_pressed">#cceeeeee</color>
+    <color name="splitter_color">#edf0f5</color>
 
     <color name="transparent_color">#0000</color>
     <color name="white_color">#ffffffff</color>
@@ -28,6 +29,7 @@
     <color name="black_color">#ff000000</color>
     <color name="light_gray_color">#999999</color>
     <color name="gray_color_6">#666666</color>
+    <color name="color_a">#aaaaaa</color>
     <color name="default_text_color">#333333</color>
     <color name="red_text_color">#ee7354</color>
     <color name="default_hint_text_color">#dadada</color>

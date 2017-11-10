@@ -167,6 +167,7 @@ public class XDataProcesser {
 
         List<XLabelInfo.Range> timeRanges = xLabelInfo.getTimeRanges();
         int startIndex = -1;
+        boolean foundEnd = false;
         for (int i = 0; i < timeRanges.size(); ++i) {
             FixInfo fixInfo = null;
             XLabelInfo.Range range = timeRanges.get(i);
@@ -175,6 +176,7 @@ public class XDataProcesser {
                 fixInfo = new FixInfo();
                 fixInfo.start = start.addOneMinute();
                 if (range.inRange(end)) {
+                    foundEnd = true;
                     fixInfo.count = end.sub(fixInfo.start);
                     result.add(fixInfo);
                     break;
@@ -185,6 +187,7 @@ public class XDataProcesser {
                 fixInfo = new FixInfo();
                 fixInfo.start = range.start;
                 if (range.inRange(end)) {
+                    foundEnd = true;
                     fixInfo.count = end.sub(fixInfo.start);
                     result.add(fixInfo);
                     break;
@@ -195,6 +198,12 @@ public class XDataProcesser {
             if (fixInfo != null) {
                 result.add(fixInfo);
             }
+        }
+
+        if (!foundEnd) {
+            //数据不在有效范围内，不补全
+            Log.e(TAG, "invalid data," + endItem);
+            result.clear();
         }
 
         return result;

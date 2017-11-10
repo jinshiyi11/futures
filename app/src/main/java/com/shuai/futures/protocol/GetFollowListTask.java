@@ -9,23 +9,42 @@ import com.android.volley.Response;
 import com.android.volley.Response.Listener;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import com.shuai.futures.data.Constants;
 import com.shuai.futures.data.FuturesInfo;
+import com.shuai.futures.data.UserInfo;
+import com.shuai.futures.logic.UserManager;
+
+import org.apache.http.message.BasicNameValuePair;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
-public class GetFuturesListTask extends BaseTask<List<FuturesInfo>> {
-    private static final String TAG = GetFuturesListTask.class.getSimpleName();
+public class GetFollowListTask extends BaseAutoReloginTask<List<FuturesInfo>> {
+    private static final String TAG = GetFollowListTask.class.getSimpleName();
 
-    public GetFuturesListTask(Context context, Listener<List<FuturesInfo>> listener, Response.ErrorListener errorListener) {
-        super(Method.GET, UrlHelper.getUrl(context, "data/futures_list.json"),
+    public GetFollowListTask(Context context, Listener<List<FuturesInfo>> listener, Response.ErrorListener errorListener) {
+        super(Method.GET, UrlHelper.getUrl(context, "api/followList"),
                 null, listener, errorListener);
+    }
+
+    private static List<BasicNameValuePair> getBody(Context context){
+        List<BasicNameValuePair> params = new LinkedList<BasicNameValuePair>();
+
+        UserInfo accountInfo = UserManager.getInstance().getUserInfo();
+        if(accountInfo!=null){
+            params.add(new BasicNameValuePair("uid", String.valueOf(accountInfo.getUid())));
+            params.add(new BasicNameValuePair("token", accountInfo.getToken()));
+        }
+
+        UrlHelper.addCommonParameters(context, params);
+        return params;
     }
 
     @Override
@@ -44,8 +63,7 @@ public class GetFuturesListTask extends BaseTask<List<FuturesInfo>> {
             }
 
             Gson gson = new Gson();
-            Type type = new TypeToken<ArrayList<FuturesInfo>>() {
-            }.getType();
+            Type type = new TypeToken<ArrayList<FuturesInfo>>() {}.getType();
             List<FuturesInfo> result = gson.fromJson(root.get(ProtocolUtils.DATA), type);
             if (result == null) {
                 return Response.error(new ParseError());

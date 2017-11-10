@@ -64,8 +64,8 @@ public class XLabelInfo {
             }
 
             int hours = hour - start.hour;
-            if (hour > start.hour) {
-                result += hours * 60 + minute + (60 - start.minute);
+            if (hours > 0) {
+                result += (hours - 1) * 60 + minute + (60 - start.minute);
             } else {
                 result = minute - start.minute;
             }

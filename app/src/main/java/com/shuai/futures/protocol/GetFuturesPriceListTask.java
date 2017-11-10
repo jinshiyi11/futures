@@ -39,7 +39,7 @@ public class GetFuturesPriceListTask extends BaseTask<List<FuturesPrice>> {
     private static String getUrl(List<FuturesInfo> idList) {
         StringBuilder url = new StringBuilder("https://hq.sinajs.cn/list=");
         for (int i = 0; i < idList.size(); i++) {
-            url.append(idList.get(i).mId);
+            url.append(idList.get(i).mName);
             if (i != idList.size() - 1) {
                 url.append(",");
             }

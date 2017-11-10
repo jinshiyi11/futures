@@ -12,7 +12,7 @@ public class Constants {
     /**
      * 是使用线上服务还是开发环境的服务
      */
-    public static boolean SERVER_ONLINE = true;
+    public static boolean SERVER_ONLINE = false;
 
     public static final String SERVER_ADDRESS;
 
@@ -41,9 +41,23 @@ public class Constants {
      */
     public static final String EXTRA_IS_MODIFY_APSSWORD="extra_is_modify_password";
 
+    /**
+     * 登录成功后要执行的intent
+     */
+    public static final String EXTRA_LOGIN_TARGET_INTENT="extra_login_target_intent";
+
+    /**
+     *
+     */
+    public static final String EXTRA_TARGET_INTENT_ACTIVITY="extra_target_intent_activity";
+
+    public static final String EXTRA_URL="extra_url";
+
+    public static final String EXTRA_IMAGE_URL="extra_image_url";
+
     static {
         if (!SERVER_ONLINE) {
-            SERVER_ADDRESS = "http://192.168.1.102:8080";
+            SERVER_ADDRESS = "http://192.168.1.102:8081";
         } else {
             SERVER_ADDRESS = "http://hehedream.duapp.com";
         }

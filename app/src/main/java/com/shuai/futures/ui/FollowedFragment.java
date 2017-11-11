@@ -19,11 +19,14 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.shuai.futures.MyApplication;
 import com.shuai.futures.R;
 import com.shuai.futures.adapter.FuturesListAdapter;
+import com.shuai.futures.data.DataManager;
 import com.shuai.futures.data.FuturesInfo;
 import com.shuai.futures.data.FuturesPrice;
 import com.shuai.futures.data.LoadingStatus;
-import com.shuai.futures.protocol.GetFollowListTask;
-import com.shuai.futures.protocol.GetFuturesListTask;
+import com.shuai.futures.event.FollowedFuturesAddedEvent;
+import com.shuai.futures.event.FollowedFuturesRefreshedEvent;
+import com.shuai.futures.logic.UserManager;
+import com.shuai.futures.protocol.GetFollowedListTask;
 import com.shuai.futures.protocol.GetFuturesPriceListTask;
 import com.shuai.futures.protocol.ProtocolUtils;
 import com.shuai.futures.ui.base.BaseTabFragment;
@@ -32,12 +35,17 @@ import com.shuai.futures.utils.Utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.greenrobot.event.EventBus;
+import de.greenrobot.event.Subscribe;
+
 /**
  * 我的自选
  */
-public class FollowFragment extends BaseTabFragment {
+public class FollowedFragment extends BaseTabFragment {
     private LoadingStatus mStatus = LoadingStatus.STATUS_LOADING;
     private RequestQueue mRequestQueue;
+    private UserManager mUserManager;
+    private DataManager mDataManager;
     private Handler mHandler = new Handler();
     private ViewGroup mNoNetworkContainer;
     private ViewGroup mLoadingContainer;
@@ -45,7 +53,7 @@ public class FollowFragment extends BaseTabFragment {
     private ImageView mIvSearch;
 
     private PullToRefreshListView mListView;
-    private List<FuturesInfo> mFuturesInfoList;
+    private List<FuturesInfo> mFollowedList;
     private List<FuturesPrice> mFuturesPriceList = new ArrayList<>();
     private FuturesListAdapter mAdapter;
     private Runnable mRefreshRunnable = new Runnable() {
@@ -55,13 +63,16 @@ public class FollowFragment extends BaseTabFragment {
         }
     };
 
-    public FollowFragment() {
-        super(R.layout.fragment_follow);
+    public FollowedFragment() {
+        super(R.layout.fragmented_follow);
     }
 
     @Override
     protected void onInit(View root, Bundle savedInstanceState) {
         mRequestQueue = MyApplication.getRequestQueue();
+        mDataManager = DataManager.getInstance();
+        mUserManager = UserManager.getInstance();
+        EventBus.getDefault().register(this);
         mNoNetworkContainer = (ViewGroup) root.findViewById(R.id.no_network_container);
         mLoadingContainer = (ViewGroup) root.findViewById(R.id.loading_container);
         mMainContainer = (ViewGroup) root.findViewById(R.id.main_container);
@@ -72,7 +83,7 @@ public class FollowFragment extends BaseTabFragment {
             @Override
             public void onClick(View v) {
                 setStatus(LoadingStatus.STATUS_LOADING);
-                getFollowList();
+                getFollowedList();
             }
         });
 
@@ -92,7 +103,7 @@ public class FollowFragment extends BaseTabFragment {
 
             @Override
             public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
-                getFollowList();
+                getFollowedList();
             }
 
             @Override
@@ -101,10 +112,11 @@ public class FollowFragment extends BaseTabFragment {
             }
         });
 
-        mAdapter = new FuturesListAdapter(mContext, mFuturesPriceList);
+        mFollowedList = mDataManager.getFollowedFutures();
+        mAdapter = new FuturesListAdapter(mContext,mFollowedList, mFuturesPriceList);
         mListView.setAdapter(mAdapter);
         setStatus(LoadingStatus.STATUS_LOADING);
-        getFollowList();
+        getFollowedList();
     }
 
     private void gotoSearchActivity() {
@@ -114,6 +126,7 @@ public class FollowFragment extends BaseTabFragment {
 
     @Override
     public void onDestroyView() {
+        EventBus.getDefault().unregister(this);
         mHandler.removeCallbacksAndMessages(null);
         if (mRequestQueue != null) {
             mRequestQueue.cancelAll(this);
@@ -164,21 +177,23 @@ public class FollowFragment extends BaseTabFragment {
         mListView.setEmptyView(emptyView);
     }
 
-    private void getFollowList() {
-        GetFollowListTask request = new GetFollowListTask(mContext, new Response.Listener<List<FuturesInfo>>() {
+    private void getFollowedList() {
+        if (!mUserManager.isLogined()) {
+            getFuturesPrice();
+            return;
+        }
+
+        GetFollowedListTask request = new GetFollowedListTask(mContext, new Response.Listener<List<FuturesInfo>>() {
 
             @Override
             public void onResponse(List<FuturesInfo> result) {
-                mListView.onRefreshComplete();
-
-                mFuturesInfoList = result;
+                mDataManager.refreshFollowedFutures(result);
                 getFuturesPrice();
             }
         }, new Response.ErrorListener() {
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                mListView.onRefreshComplete();
                 if (mAdapter.getCount() == 0) {
                     setStatus(LoadingStatus.STATUS_NO_NETWORK);
                 }
@@ -192,11 +207,14 @@ public class FollowFragment extends BaseTabFragment {
     }
 
     private void getFuturesPrice() {
-        if (mFuturesInfoList == null || mFuturesInfoList.size() == 0) {
+        if (mFollowedList.size() == 0) {
+            setStatus(LoadingStatus.STATUS_GOT_DATA);
+            mListView.onRefreshComplete();
+            updateEmptyView();
             return;
         }
 
-        GetFuturesPriceListTask request = new GetFuturesPriceListTask(mContext, mFuturesInfoList, new Response.Listener<List<FuturesPrice>>() {
+        GetFuturesPriceListTask request = new GetFuturesPriceListTask(mContext, mFollowedList, new Response.Listener<List<FuturesPrice>>() {
 
             @Override
             public void onResponse(List<FuturesPrice> futuresPrices) {
@@ -204,7 +222,9 @@ public class FollowFragment extends BaseTabFragment {
                     setStatus(LoadingStatus.STATUS_GOT_DATA);
                 }
 
-                mFuturesPriceList = futuresPrices;
+                mListView.onRefreshComplete();
+                mFuturesPriceList.clear();
+                mFuturesPriceList.addAll(futuresPrices);
                 mAdapter.notifyDataSetChanged();
                 updateEmptyView();
                 refreshList();
@@ -213,6 +233,7 @@ public class FollowFragment extends BaseTabFragment {
 
             @Override
             public void onErrorResponse(VolleyError error) {
+                mListView.onRefreshComplete();
                 if (mAdapter.getCount() == 0) {
                     setStatus(LoadingStatus.STATUS_NO_NETWORK);
                     Utils.showShortToast(mContext, ProtocolUtils.getErrorInfo(error).getErrorMessage());
@@ -230,5 +251,15 @@ public class FollowFragment extends BaseTabFragment {
     private void refreshList() {
         mHandler.removeCallbacks(mRefreshRunnable);
         mHandler.postDelayed(mRefreshRunnable, 1000);
+    }
+
+    @Subscribe
+    public void onEvent(FollowedFuturesRefreshedEvent event) {
+        getFuturesPrice();
+    }
+
+    @Subscribe
+    public void onEvent(FollowedFuturesAddedEvent event) {
+        getFuturesPrice();
     }
 }

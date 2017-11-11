@@ -16,7 +16,7 @@
             android:id="@+id/sv_search"
             style="@style/SearchView"
             android:layout_marginLeft="10dp"
-            android:layout_marginRight="8dp"
+            android:layout_marginRight="3dp"
             android:layout_width="0dp"
             android:layout_height="31dp"
             android:layout_weight="1" />

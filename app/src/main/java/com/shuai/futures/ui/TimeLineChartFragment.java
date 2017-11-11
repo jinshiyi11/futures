@@ -50,8 +50,8 @@ public class TimeLineChartFragment extends BaseTabFragment implements OnChartVal
     public static final String KEY_LASTDAY_PRICE = "key_lastday_price";
     private RequestQueue mRequestQueue;
     private Handler mHandler = new Handler();
-    private String mFuturesId;
     private String mFuturesName;
+    private String mFuturesTitle;
 
     private MyLineChart mTimeLineChart;
     private MyBarChart mVolumeChart;
@@ -78,8 +78,8 @@ public class TimeLineChartFragment extends BaseTabFragment implements OnChartVal
     protected void onInit(View root, Bundle savedInstanceState) {
         mRequestQueue = MyApplication.getRequestQueue();
         Intent intent = getActivity().getIntent();
-        mFuturesId = intent.getStringExtra(Constants.EXTRA_FUTURES_ID);
         mFuturesName = intent.getStringExtra(Constants.EXTRA_FUTURES_NAME);
+        mFuturesTitle = intent.getStringExtra(Constants.EXTRA_FUTURES_TITLE);
 
         mLastdayPrice = getArguments().getDouble(KEY_LASTDAY_PRICE);
         mTimeLineChart = (MyLineChart) root.findViewById(R.id.chart_realtime);
@@ -87,7 +87,7 @@ public class TimeLineChartFragment extends BaseTabFragment implements OnChartVal
 
         mTimeLineChart.setKlineType(KlineType.KRealTime);
         mTimeLineChart.setBasePrice(mLastdayPrice);
-        XLabelInfo xLabelInfo = XDataProcesser.getInstance().getXLabelInfo(mFuturesId);
+        XLabelInfo xLabelInfo = XDataProcesser.getInstance().getXLabelInfo(mFuturesName);
         mTimeLineChart.setXLabelInfo(xLabelInfo);
 
         //设置期货交易时长
@@ -136,7 +136,7 @@ public class TimeLineChartFragment extends BaseTabFragment implements OnChartVal
     }
 
     private void getTimeLineInfo() {
-        GetTimeLineTask request = new GetTimeLineTask(mContext, mFuturesId, new Response.Listener<List<TimeLineItem>>() {
+        GetTimeLineTask request = new GetTimeLineTask(mContext, mFuturesName, new Response.Listener<List<TimeLineItem>>() {
 
             @Override
             public void onResponse(List<TimeLineItem> timeLineItemList) {

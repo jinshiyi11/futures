@@ -39,7 +39,7 @@ public class MarketFragment extends BaseTabFragment {
     private ViewGroup mMainContainer;
 
     private PullToRefreshListView mListView;
-    private List<FuturesInfo> mFuturesInfoList;
+    private List<FuturesInfo> mFuturesInfoList = new ArrayList<>();
     private List<FuturesPrice> mFuturesPriceList = new ArrayList<>();
     private FuturesListAdapter mAdapter;
 
@@ -88,7 +88,7 @@ public class MarketFragment extends BaseTabFragment {
             }
         });
 
-        mAdapter = new FuturesListAdapter(mContext, mFuturesPriceList);
+        mAdapter = new FuturesListAdapter(mContext, mFuturesInfoList, mFuturesPriceList);
         mListView.setAdapter(mAdapter);
         setStatus(LoadingStatus.STATUS_LOADING);
         getFuturesList();
@@ -134,7 +134,8 @@ public class MarketFragment extends BaseTabFragment {
                 mListView.onRefreshComplete();
                 //setStatus(LoadingStatus.STATUS_GOT_DATA);
 
-                mFuturesInfoList = result;
+                mFuturesInfoList.clear();
+                mFuturesInfoList.addAll(result);
                 getFuturesPrice();
             }
         }, new Response.ErrorListener() {
@@ -168,7 +169,7 @@ public class MarketFragment extends BaseTabFragment {
                     found = false;
                     for (int i = 0; i < mFuturesPriceList.size(); i++) {
                         FuturesPrice current = mFuturesPriceList.get(i);
-                        if (item.mId.equals(current.mId)) {
+                        if (item.mName.equals(current.mName)) {
                             current.update(item);
                             found = true;
                             break;

@@ -23,7 +23,6 @@ import com.shuai.futures.MyApplication;
 import com.shuai.futures.R;
 import com.shuai.futures.data.Constants;
 import com.shuai.futures.data.KlineItem;
-import com.shuai.futures.data.TimeLineItem;
 import com.shuai.futures.protocol.GetFuturesDailyKlineTask;
 import com.shuai.futures.protocol.ProtocolUtils;
 import com.shuai.futures.ui.base.BaseTabFragment;
@@ -36,7 +35,6 @@ import com.shuai.futures.view.chart.MyBarDataSet;
 import com.shuai.futures.view.chart.MyCandleDataSet;
 import com.shuai.futures.view.chart.MyCombinedChart;
 import com.shuai.futures.view.chart.OnKlineHighlightListener;
-import com.shuai.futures.view.chart.OnTimeLineHighlightListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,8 +45,8 @@ import java.util.List;
 public class KlineChartFragment extends BaseTabFragment implements OnChartValueSelectedListener {
     public static final String KEY_KLINE_CHART_TYPE = "key_kline_chart_type";
     private RequestQueue mRequestQueue;
-    private String mFuturesId;
     private String mFuturesName;
+    private String mFuturesTitle;
 
     private MyCombinedChart mKlineChart;
     private MyBarChart mVolumeChart;
@@ -65,8 +63,8 @@ public class KlineChartFragment extends BaseTabFragment implements OnChartValueS
     protected void onInit(View root, Bundle savedInstanceState) {
         mRequestQueue = MyApplication.getRequestQueue();
         Intent intent = getActivity().getIntent();
-        mFuturesId = intent.getStringExtra(Constants.EXTRA_FUTURES_ID);
         mFuturesName = intent.getStringExtra(Constants.EXTRA_FUTURES_NAME);
+        mFuturesTitle = intent.getStringExtra(Constants.EXTRA_FUTURES_TITLE);
         mKlineType = (KlineType) getArguments().getSerializable(KEY_KLINE_CHART_TYPE);
 
         mKlineChart = (MyCombinedChart) root.findViewById(R.id.chart_kline);
@@ -94,7 +92,7 @@ public class KlineChartFragment extends BaseTabFragment implements OnChartValueS
     }
 
     private void getDailyKlineInfo() {
-        GetFuturesDailyKlineTask request = new GetFuturesDailyKlineTask(mContext, mFuturesId, mKlineType, new Response.Listener<List<KlineItem>>() {
+        GetFuturesDailyKlineTask request = new GetFuturesDailyKlineTask(mContext, mFuturesName, mKlineType, new Response.Listener<List<KlineItem>>() {
 
             @Override
             public void onResponse(List<KlineItem> klineItemList) {

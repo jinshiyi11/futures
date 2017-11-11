@@ -1,6 +1,5 @@
 package com.shuai.futures.ui;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -8,10 +7,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
@@ -36,7 +33,6 @@ import com.shuai.futures.view.chart.KlineType;
 import com.shuai.futures.view.chart.OnKlineHighlightListener;
 import com.shuai.futures.view.chart.OnTimeLineHighlightListener;
 import com.shuai.futures.view.chart.TimeLineHead;
-import com.viewpagerindicator.TabPageIndicator;
 import com.viewpagerindicator.TabPageIndicatorEx;
 import com.viewpagerindicator.TabViewInterface;
 
@@ -49,6 +45,7 @@ import java.util.List;
 public class CandleStickActivity extends BaseFragmentActivity implements OnTimeLineHighlightListener, OnKlineHighlightListener {
     private String mFuturesId;
     private String mFuturesName;
+    private String mFuturesTitle;
     private LoadingStatus mStatus = LoadingStatus.STATUS_LOADING;
     private RequestQueue mRequestQueue;
     private Handler mHandler = new Handler();
@@ -91,6 +88,7 @@ public class CandleStickActivity extends BaseFragmentActivity implements OnTimeL
 
         Intent intent = getIntent();
         mFuturesId = intent.getStringExtra(Constants.EXTRA_FUTURES_ID);
+        mFuturesName = intent.getStringExtra(Constants.EXTRA_FUTURES_NAME);
         mTvTitle = (TextView) findViewById(R.id.tv_title);
         mTvTitle.setText("期货");
 
@@ -163,15 +161,15 @@ public class CandleStickActivity extends BaseFragmentActivity implements OnTimeL
 
     private void getFuturesPrice() {
         List<FuturesInfo> futures = new ArrayList<>();
-        futures.add(new FuturesInfo(mFuturesId, null, null));
+        futures.add(new FuturesInfo(null, mFuturesName, null));
         GetFuturesPriceListTask request = new GetFuturesPriceListTask(mContext, futures, new Response.Listener<List<FuturesPrice>>() {
 
             @Override
             public void onResponse(List<FuturesPrice> futuresPrices) {
                 mPriceInfo = futuresPrices.get(0);
-                if (mFuturesName == null) {
-                    mFuturesName = mPriceInfo.mName;
-                    mTvTitle.setText(mFuturesName);
+                if (mFuturesTitle == null) {
+                    mFuturesTitle = mPriceInfo.mTitle;
+                    mTvTitle.setText(mFuturesTitle);
                 }
                 int textColor = getResources().getColor(R.color.up);
                 if (mPriceInfo.mCurrentPrice < mPriceInfo.mLastdayPrice) {

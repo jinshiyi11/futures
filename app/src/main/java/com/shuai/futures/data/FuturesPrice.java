@@ -4,8 +4,8 @@ package com.shuai.futures.data;
  * 期货信息
  */
 public class FuturesPrice {
-    public String mId;
     public String mName;
+    public String mTitle;
     public double mCurrentPrice;
     /**
      * 昨结算
@@ -22,7 +22,7 @@ public class FuturesPrice {
             return;
         }
 
-        mName=info.mName;
+        mTitle =info.mTitle;
         mCurrentPrice=info.mCurrentPrice;
         mLastdayPrice=info.mLastdayPrice;
     }

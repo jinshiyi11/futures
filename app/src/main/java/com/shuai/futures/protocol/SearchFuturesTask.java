@@ -9,6 +9,8 @@ import com.android.volley.Response;
 import com.android.volley.Response.Listener;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import com.shuai.futures.data.Constants;
 import com.shuai.futures.data.FuturesInfo;
@@ -44,10 +46,17 @@ public class SearchFuturesTask extends BaseTask<List<FuturesInfo>> {
                 Log.d(TAG, jsonString);
             }
 
+            JsonParser parser=new JsonParser();
+            JsonObject root = parser.parse(jsonString).getAsJsonObject();
+            ErrorInfo error = ProtocolUtils.getProtocolInfo(root);
+            if (error.getErrorCode() != 0) {
+                return Response.error(error);
+            }
+
             Gson gson = new Gson();
             Type type = new TypeToken<ArrayList<FuturesInfo>>() {
             }.getType();
-            List<FuturesInfo> result = gson.fromJson(jsonString, type);
+            List<FuturesInfo> result = gson.fromJson(root.get(ProtocolUtils.DATA), type);
             if (result == null) {
                 return Response.error(new ParseError());
             }

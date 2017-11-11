@@ -1,7 +1,6 @@
 package com.shuai.futures.protocol;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.android.volley.NetworkResponse;
@@ -68,8 +67,8 @@ public class GetFuturesPriceListTask extends BaseTask<List<FuturesPrice>> {
                 id = line.substring(line.indexOf("hq_str_") + 7, line.indexOf('='));
                 values = line.substring(line.indexOf('\"') + 1, line.lastIndexOf('\"')).split(",");
                 FuturesPrice item = new FuturesPrice();
-                item.mId = id;
-                item.mName = values[0];
+                item.mName = id;
+                item.mTitle = values[0];
                 item.mCurrentPrice = Double.parseDouble(values[8]);
                 item.mLastdayPrice = Double.parseDouble(values[10]);
 

@@ -24,7 +24,7 @@ public class GetFuturesListTask extends BaseTask<List<FuturesInfo>> {
     private static final String TAG = GetFuturesListTask.class.getSimpleName();
 
     public GetFuturesListTask(Context context, Listener<List<FuturesInfo>> listener, Response.ErrorListener errorListener) {
-        super(Method.GET, UrlHelper.getUrl(context, "data/futures_list.json"),
+        super(Method.GET, UrlHelper.getUrl(context, "api/getFuturesList"),
                 null, listener, errorListener);
     }
 

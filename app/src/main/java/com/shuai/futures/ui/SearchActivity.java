@@ -9,14 +9,19 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.shuai.futures.MyApplication;
 import com.shuai.futures.R;
-import com.shuai.futures.adapter.SearchAdapter;
+import com.shuai.futures.adapter.SearchResultAdapter;
+import com.shuai.futures.data.DataManager;
 import com.shuai.futures.data.FuturesInfo;
+import com.shuai.futures.logic.UserManager;
+import com.shuai.futures.protocol.AddFollowedFuturesTask;
+import com.shuai.futures.protocol.ErrorInfo;
 import com.shuai.futures.protocol.ProtocolUtils;
 import com.shuai.futures.protocol.SearchFuturesTask;
 import com.shuai.futures.ui.base.BaseFragmentActivity;
@@ -28,25 +33,27 @@ import java.util.List;
 /**
  * 期货搜索页
  */
-public class SearchActivity extends BaseFragmentActivity {
+public class SearchActivity extends BaseFragmentActivity implements SearchResultAdapter.AddFollowListener {
+    private RequestQueue mRequestQueue;
+    private DataManager mDataManager;
+    private UserManager mUserManager;
     private Button mBtnCancel;
     private SearchView mSearchView;
     private ListView mLvSearchResult;
-    private SearchAdapter mAdapter;
+    private SearchResultAdapter mAdapter;
     private List<FuturesInfo> mFuturesList = new ArrayList<>();
 
-    private RequestQueue mRequestQueue;
     private WorkHandler mHandler = new WorkHandler();
-    private Object mSearchTag=new Object();
+    private Object mSearchTag = new Object();
 
-    private class WorkHandler extends Handler{
-        public static final int MESSAGE_DO_QUERY=1;
+    private class WorkHandler extends Handler {
+        public static final int MESSAGE_DO_QUERY = 1;
 
         @Override
         public void handleMessage(Message msg) {
-            switch (msg.what){
+            switch (msg.what) {
                 case MESSAGE_DO_QUERY:
-                    String key= (String) msg.obj;
+                    String key = (String) msg.obj;
                     SearchFuturesTask request = new SearchFuturesTask(mContext, key, new Response.Listener<List<FuturesInfo>>() {
                         @Override
                         public void onResponse(List<FuturesInfo> futuresInfoList) {
@@ -73,9 +80,11 @@ public class SearchActivity extends BaseFragmentActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mRequestQueue = MyApplication.getRequestQueue();
+        mDataManager = DataManager.getInstance();
+        mUserManager = UserManager.getInstance();
         setContentView(R.layout.activity_search);
 
-        mRequestQueue = MyApplication.getRequestQueue();
         mBtnCancel = (Button) findViewById(R.id.btn_cancel);
         mBtnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,8 +98,9 @@ public class SearchActivity extends BaseFragmentActivity {
         mSearchView.setIconified(false);
         mSearchView.setQueryHint("搜索期货");
 
-        mAdapter = new SearchAdapter(mContext, mFuturesList);
+        mAdapter = new SearchResultAdapter(mContext, mFuturesList);
         mLvSearchResult.setAdapter(mAdapter);
+        mAdapter.setAddFollowListener(this);
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -123,7 +133,38 @@ public class SearchActivity extends BaseFragmentActivity {
             mAdapter.clear();
         } else {
             mHandler.sendMessageDelayed(Message.obtain(mHandler,
-                    WorkHandler.MESSAGE_DO_QUERY, query.toString()),500);
+                    WorkHandler.MESSAGE_DO_QUERY, query.toString()), 500);
+        }
+    }
+
+    @Override
+    public void onAddFollow(final FuturesInfo item) {
+        if (mDataManager.isFollowedFutures(item.mId)) {
+            return;
+        }
+
+        if (mUserManager.isLogined()) {
+            AddFollowedFuturesTask requset = new AddFollowedFuturesTask(mContext, item.mId,
+                    new Response.Listener<ErrorInfo>() {
+                        @Override
+                        public void onResponse(ErrorInfo errorInfo) {
+                            mDataManager.addFollowedFutures(item);
+                            mAdapter.notifyDataSetChanged();
+                            Toast.makeText(mContext, R.string.add_follow_success, Toast.LENGTH_SHORT).show();
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Utils.showShortToast(mContext, ProtocolUtils.getErrorInfo(error).getErrorMessage());
+                        }
+                    });
+            requset.setTag(this);
+            mRequestQueue.add(requset);
+        } else {
+            mDataManager.addFollowedFutures(item);
+            mAdapter.notifyDataSetChanged();
+            Utils.showShortToast(mContext, R.string.add_follow_success);
         }
     }
 }

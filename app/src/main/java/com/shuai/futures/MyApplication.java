@@ -18,6 +18,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.shuai.futures.data.Config;
 import com.shuai.futures.data.Constants;
+import com.shuai.futures.data.DataManager;
 import com.shuai.futures.data.HttpResponseCache;
 import com.shuai.futures.logic.UserManager;
 import com.shuai.futures.net.ConnectionChangeMonitor;
@@ -97,6 +98,7 @@ public class MyApplication extends Application {
         HttpResponseCache.init(this);
 
         Config.getInstance().loadConfig();
+        DataManager.init(this);
         mConnectionChangeMonitor = new ConnectionChangeMonitor(this);
         mConnectionChangeMonitor.startMonitor();
 

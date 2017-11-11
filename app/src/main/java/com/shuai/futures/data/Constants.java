@@ -57,6 +57,9 @@ public class Constants {
 
     public static final String EXTRA_IMAGE_URL = "extra_image_url";
 
+    public static final int ACTIVITY_REQUEST_EDIT_COMMENT=1;
+    public static final int ACTIVITY_REQUEST_LOGIN=2;
+
     static {
         if (!SERVER_ONLINE) {
             SERVER_ADDRESS = "http://192.168.1.100:8081";

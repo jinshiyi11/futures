@@ -6,128 +6,128 @@
     android:background="@color/default_background_color"
     android:orientation="vertical" >
 
-    <!--<RelativeLayout-->
-        <!--android:id="@+id/rl_title"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="@dimen/default_title_height"-->
-        <!--android:background="@color/default_title_background_color" >-->
+    <RelativeLayout
+        android:id="@+id/rl_title"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/default_title_height"
+        android:background="@color/default_title_background_color" >
 
-        <!--<ImageView-->
-            <!--android:id="@+id/iv_back"-->
-            <!--android:layout_width="@dimen/default_title_height"-->
-            <!--android:layout_height="@dimen/default_title_height"-->
-            <!--android:layout_alignParentLeft="true"-->
-            <!--android:layout_centerVertical="true"-->
-            <!--android:layout_marginLeft="-5dp"-->
-            <!--android:scaleType="centerInside"-->
-            <!--android:src="@drawable/ic_back" />-->
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="@dimen/default_title_height"
+            android:layout_height="@dimen/default_title_height"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="-5dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_back" />
 
-        <!--<TextView-->
-            <!--android:id="@+id/tv_title"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_centerInParent="true"-->
-            <!--android:text="评论"-->
-            <!--android:textColor="@color/title_text_color"-->
-            <!--android:textSize="@dimen/default_title_text_size" />-->
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="评论"
+            android:textColor="@color/title_text_color"
+            android:textSize="@dimen/default_title_text_size" />
 
-        <!--<View-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="@dimen/default_title_bottom_line_height"-->
-            <!--android:layout_alignParentBottom="true"-->
-            <!--android:background="@color/default_title_bottom_line_color" />-->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/default_title_bottom_line_height"
+            android:layout_alignParentBottom="true"
+            android:background="@color/default_title_bottom_line_color" />
 
-        <!--<ImageView-->
-            <!--android:id="@+id/iv_camera"-->
-            <!--android:layout_width="46dp"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:layout_alignParentRight="true"-->
-            <!--android:layout_centerVertical="true"-->
-            <!--android:scaleType="centerInside"-->
-            <!--android:src="@drawable/ic_camera" />-->
-    <!--</RelativeLayout>-->
+        <ImageView
+            android:id="@+id/iv_camera"
+            android:layout_width="46dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_camera" />
+    </RelativeLayout>
 
-    <!--&lt;!&ndash; 无网络时的显示界面 &ndash;&gt;-->
+    <!-- 无网络时的显示界面 -->
 
-    <!--<include-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--layout="@layout/layout_no_network"-->
-        <!--android:visibility="gone" />-->
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        layout="@layout/layout_no_network"
+        android:visibility="gone" />
 
-    <!--&lt;!&ndash; 正在加载界面 &ndash;&gt;-->
+    <!-- 正在加载界面 -->
 
-    <!--<include-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--layout="@layout/layout_loading"-->
-        <!--android:visibility="gone" />-->
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        layout="@layout/layout_loading"
+        android:visibility="gone" />
 
-    <!--<LinearLayout-->
-        <!--android:id="@+id/main_container"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:orientation="vertical" >-->
+    <LinearLayout
+        android:id="@+id/main_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
 
-        <!--<com.handmark.pulltorefresh.library.PullToRefreshListView-->
-            <!--android:id="@+id/lv_comment"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="0dp"-->
-            <!--android:layout_weight="1"-->
-            <!--android:cacheColorHint="#00000000"-->
-            <!--android:divider="@color/default_split_line_color"-->
-            <!--android:dividerHeight="1px"-->
-            <!--android:fadingEdge="none"-->
-            <!--android:fastScrollEnabled="false"-->
-            <!--android:listSelector="@color/transparent_color"-->
-            <!--android:scrollbars="vertical"-->
-            <!--pulltorefresh:ptrShowIndicator="false" >-->
-        <!--</com.handmark.pulltorefresh.library.PullToRefreshListView>-->
+        <com.handmark.pulltorefresh.library.PullToRefreshListView
+            android:id="@+id/lv_comment"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:cacheColorHint="#00000000"
+            android:divider="@color/default_split_line_color"
+            android:dividerHeight="1px"
+            android:fadingEdge="none"
+            android:fastScrollEnabled="false"
+            android:listSelector="@color/transparent_color"
+            android:scrollbars="vertical"
+            pulltorefresh:ptrShowIndicator="false" >
+        </com.handmark.pulltorefresh.library.PullToRefreshListView>
 
-        <!--<View-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="@dimen/default_title_bottom_line_height"-->
-            <!--android:background="@color/default_split_line_color" />-->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/default_title_bottom_line_height"
+            android:background="@color/default_split_line_color" />
 
-        <!--<LinearLayout-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="48dp"-->
-            <!--android:background="#ffffff"-->
-            <!--android:orientation="horizontal" >-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="#ffffff"
+            android:orientation="horizontal" >
 
-            <!--<com.wiixiaobao.wxb.view.CommentEditText-->
-                <!--android:id="@+id/et_comment"-->
-                <!--android:layout_width="0dp"-->
-                <!--android:layout_height="match_parent"-->
-                <!--android:layout_marginBottom="6dp"-->
-                <!--android:layout_marginLeft="10dp"-->
-                <!--android:layout_marginTop="6dp"-->
-                <!--android:layout_weight="1"-->
-                <!--android:background="@drawable/edit_bg"-->
-                <!--android:ems="10"-->
-                <!--android:hint="我也来说两句"-->
-                <!--android:inputType="textMultiLine"-->
-                <!--android:paddingLeft="10dp"-->
-                <!--android:textColor="@color/default_text_color"-->
-                <!--android:textColorHint="@color/default_hint_text_color"-->
-                <!--android:textSize="16sp" >-->
+            <com.shuai.futures.view.CommentEditText
+                android:id="@+id/et_comment"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="6dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="6dp"
+                android:layout_weight="1"
+                android:background="@drawable/edit_bg"
+                android:ems="10"
+                android:hint="我也来说两句"
+                android:inputType="textMultiLine"
+                android:paddingLeft="10dp"
+                android:textColor="@color/default_text_color"
+                android:textColorHint="@color/default_hint_text_color"
+                android:textSize="16sp" >
 
-                <!--<requestFocus />-->
-            <!--</com.wiixiaobao.wxb.view.CommentEditText>-->
+                <requestFocus />
+            </com.shuai.futures.view.CommentEditText>
 
-            <!--<Button-->
-                <!--android:id="@+id/btn_submit_comment"-->
-                <!--android:layout_width="78dp"-->
-                <!--android:layout_height="match_parent"-->
-                <!--android:layout_marginBottom="6dp"-->
-                <!--android:layout_marginLeft="10dp"-->
-                <!--android:layout_marginRight="10dp"-->
-                <!--android:layout_marginTop="6dp"-->
-                <!--android:background="@drawable/btn_red_bg"-->
-                <!--android:text="留言"-->
-                <!--android:textColor="#ffffff"-->
-                <!--android:textSize="16sp" />-->
-        <!--</LinearLayout>-->
-    <!--</LinearLayout>-->
+            <Button
+                android:id="@+id/btn_submit_comment"
+                android:layout_width="78dp"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="6dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/btn_red_bg"
+                android:text="留言"
+                android:textColor="#ffffff"
+                android:textSize="16sp" />
+        </LinearLayout>
+    </LinearLayout>
 
 </LinearLayout>

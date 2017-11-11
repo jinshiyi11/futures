@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
@@ -42,7 +43,7 @@ import java.util.List;
 /**
  *
  */
-public class CandleStickActivity extends BaseFragmentActivity implements OnTimeLineHighlightListener, OnKlineHighlightListener {
+public class CandleStickActivity extends BaseFragmentActivity implements OnTimeLineHighlightListener, OnKlineHighlightListener, View.OnClickListener {
     private String mFuturesId;
     private String mFuturesName;
     private String mFuturesTitle;
@@ -68,6 +69,7 @@ public class CandleStickActivity extends BaseFragmentActivity implements OnTimeL
 
     private TimeLineHead mTimelineHead;
     private KlineHead mKlineHead;
+    private LinearLayout mLlComment;
 
     private FuturesPrice mPriceInfo;
 
@@ -122,6 +124,8 @@ public class CandleStickActivity extends BaseFragmentActivity implements OnTimeL
                 getSupportFragmentManager());
         mViewPager.setOffscreenPageLimit(TAB_TITLES.length);
         mIndicator = (TabPageIndicatorEx) findViewById(R.id.tbi_order);
+        mLlComment= (LinearLayout) findViewById(R.id.ll_comment);
+        mLlComment.setOnClickListener(this);
 
         setStatus(LoadingStatus.STATUS_LOADING);
         getFuturesPrice();
@@ -253,6 +257,21 @@ public class CandleStickActivity extends BaseFragmentActivity implements OnTimeL
         if (mKlineHead.getVisibility() == View.VISIBLE) {
             mKlineHead.setVisibility(View.GONE);
             mIndicator.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        int id=v.getId();
+        switch (id){
+            case R.id.ll_comment: {
+                Intent intent=new Intent(mContext,CommentListActivity.class);
+                intent.putExtra(Constants.EXTRA_FUTURES_ID,mFuturesId);
+                intent.putExtra(Constants.EXTRA_FUTURES_NAME,mFuturesName);
+                intent.putExtra(Constants.EXTRA_FUTURES_TITLE,mFuturesTitle);
+                startActivity(intent);
+                break;
+            }
         }
     }
 

@@ -49,7 +49,7 @@ public class SubmitCommentTask extends BaseAutoReloginTask<Void> {
 
         if (accountInfo != null) {
             params.add(new BasicNameValuePair("uid", String.valueOf(accountInfo.getUid())));
-            params.add(new BasicNameValuePair("token", accountInfo.getToken()));
+            params.add(new BasicNameValuePair("access_token", accountInfo.getToken()));
         }
 
         params.add(new BasicNameValuePair("futuresId", futuresId));

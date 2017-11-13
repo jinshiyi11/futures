@@ -35,6 +35,17 @@
             android:layout_height="@dimen/default_title_bottom_line_height"
             android:layout_alignParentBottom="true"
             android:background="@color/default_title_bottom_line_color" />
+
+        <ImageView
+            android:id="@+id/iv_search"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:scaleType="centerInside"
+            android:background="@drawable/btn_transparent_bg"
+            pulltorefresh:srcCompat="@drawable/ic_search" />
     </RelativeLayout>
     <!-- 无缓存无网络时的显示界面 -->
 

@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.android.volley.RequestQueue;
@@ -21,6 +22,7 @@ import com.shuai.futures.protocol.GetFuturesListTask;
 import com.shuai.futures.protocol.GetFuturesPriceListTask;
 import com.shuai.futures.protocol.ProtocolUtils;
 import com.shuai.futures.ui.base.BaseTabFragment;
+import com.shuai.futures.utils.NavigateUtils;
 import com.shuai.futures.utils.Utils;
 
 import java.util.ArrayList;
@@ -37,6 +39,7 @@ public class MarketFragment extends BaseTabFragment {
     private ViewGroup mNoNetworkContainer;
     private ViewGroup mLoadingContainer;
     private ViewGroup mMainContainer;
+    private ImageView mIvSearch;
 
     private PullToRefreshListView mListView;
     private List<FuturesInfo> mFuturesInfoList = new ArrayList<>();
@@ -68,6 +71,13 @@ public class MarketFragment extends BaseTabFragment {
             public void onClick(View v) {
                 setStatus(LoadingStatus.STATUS_LOADING);
                 getFuturesList();
+            }
+        });
+        mIvSearch = (ImageView) root.findViewById(R.id.iv_search);
+        mIvSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavigateUtils.showSearchActivity(mContext);
             }
         });
 

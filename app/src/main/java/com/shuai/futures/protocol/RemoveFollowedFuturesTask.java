@@ -36,7 +36,7 @@ public class RemoveFollowedFuturesTask extends BaseAutoReloginTask<ErrorInfo> {
         params.add(new BasicNameValuePair("futuresId", futuresId));
         UserInfo accountInfo = UserManager.getInstance().getUserInfo();
         params.add(new BasicNameValuePair("uid", String.valueOf(accountInfo.getUid())));
-        params.add(new BasicNameValuePair("token", accountInfo.getToken()));
+        params.add(new BasicNameValuePair("access_token", accountInfo.getToken()));
 
         UrlHelper.addCommonParameters(context, params);
         return params;

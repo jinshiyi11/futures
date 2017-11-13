@@ -39,7 +39,7 @@ public class ModifyPasswordTask extends BaseAutoReloginTask<Void> {
 		UserInfo accountInfo = UserManager.getInstance().getUserInfo();
 		
 		params.add(new BasicNameValuePair("uid", String.valueOf(accountInfo.getUid())));
-		params.add(new BasicNameValuePair("token", accountInfo.getToken()));
+		params.add(new BasicNameValuePair("access_token", accountInfo.getToken()));
 		params.add(new BasicNameValuePair("old_password", oldMd5Password));
 		params.add(new BasicNameValuePair("new_password", newMd5Password));
 

@@ -114,7 +114,7 @@ public abstract class BaseAutoReloginTask<T> extends BaseTask<T> {
 			if (item.getName().equals("token")) {
 				UserInfo userInfo = UserManager.getInstance().getUserInfo();
 				if(userInfo!=null)
-					params.add(new BasicNameValuePair("token", userInfo.getToken()));
+					params.add(new BasicNameValuePair("access_token", userInfo.getToken()));
 			} else {
 				params.add(item);
 			}

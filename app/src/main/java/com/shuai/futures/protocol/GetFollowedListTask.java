@@ -39,7 +39,7 @@ public class GetFollowedListTask extends BaseAutoReloginTask<List<FuturesInfo>> 
         UserInfo accountInfo = UserManager.getInstance().getUserInfo();
         if(accountInfo!=null){
             params.add(new BasicNameValuePair("uid", String.valueOf(accountInfo.getUid())));
-            params.add(new BasicNameValuePair("token", accountInfo.getToken()));
+            params.add(new BasicNameValuePair("access_token", accountInfo.getToken()));
         }
 
         UrlHelper.addCommonParameters(context, params);

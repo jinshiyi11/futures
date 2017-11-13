@@ -30,6 +30,7 @@ import com.shuai.futures.protocol.GetFollowedListTask;
 import com.shuai.futures.protocol.GetFuturesPriceListTask;
 import com.shuai.futures.protocol.ProtocolUtils;
 import com.shuai.futures.ui.base.BaseTabFragment;
+import com.shuai.futures.utils.NavigateUtils;
 import com.shuai.futures.utils.Utils;
 
 import java.util.ArrayList;
@@ -41,7 +42,7 @@ import de.greenrobot.event.Subscribe;
 /**
  * 我的自选
  */
-public class FollowedFragment extends BaseTabFragment {
+public class FollowFragment extends BaseTabFragment {
     private LoadingStatus mStatus = LoadingStatus.STATUS_LOADING;
     private RequestQueue mRequestQueue;
     private UserManager mUserManager;
@@ -63,8 +64,8 @@ public class FollowedFragment extends BaseTabFragment {
         }
     };
 
-    public FollowedFragment() {
-        super(R.layout.fragmented_follow);
+    public FollowFragment() {
+        super(R.layout.fragment_follow);
     }
 
     @Override
@@ -91,7 +92,7 @@ public class FollowedFragment extends BaseTabFragment {
         mIvSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                gotoSearchActivity();
+                NavigateUtils.showSearchActivity(mContext);
             }
         });
 
@@ -117,11 +118,6 @@ public class FollowedFragment extends BaseTabFragment {
         mListView.setAdapter(mAdapter);
         setStatus(LoadingStatus.STATUS_LOADING);
         getFollowedList();
-    }
-
-    private void gotoSearchActivity() {
-        Intent intent = new Intent(mContext, SearchActivity.class);
-        startActivity(intent);
     }
 
     @Override
@@ -171,7 +167,7 @@ public class FollowedFragment extends BaseTabFragment {
         emptyView.findViewById(R.id.ll_add_follow).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                gotoSearchActivity();
+                NavigateUtils.showSearchActivity(mContext);
             }
         });
         mListView.setEmptyView(emptyView);

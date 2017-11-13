@@ -25,6 +25,7 @@ import com.shuai.futures.protocol.ErrorInfo;
 import com.shuai.futures.protocol.ProtocolUtils;
 import com.shuai.futures.protocol.SearchFuturesTask;
 import com.shuai.futures.ui.base.BaseFragmentActivity;
+import com.shuai.futures.utils.UiUtils;
 import com.shuai.futures.utils.Utils;
 
 import java.util.ArrayList;
@@ -94,9 +95,19 @@ public class SearchActivity extends BaseFragmentActivity implements SearchResult
         });
         mSearchView = (SearchView) findViewById(R.id.sv_search);
         mLvSearchResult = (ListView) findViewById(R.id.lv_search_result);
-        mSearchView.setIconifiedByDefault(false);
-        mSearchView.setIconified(false);
         mSearchView.setQueryHint("搜索期货");
+        mSearchView.setIconifiedByDefault(false);
+
+        //TODO:为什么调用setIconified(false)不能呼出软键盘？
+        //mSearchView.setIconified(false);
+        mSearchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus) {
+                    UiUtils.showSoftInput(mContext,view.findFocus());
+                }
+            }
+        });
 
         mAdapter = new SearchResultAdapter(mContext, mFuturesList);
         mLvSearchResult.setAdapter(mAdapter);

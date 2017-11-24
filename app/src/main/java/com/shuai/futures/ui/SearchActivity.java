@@ -156,9 +156,9 @@ public class SearchActivity extends BaseFragmentActivity implements SearchResult
 
         if (mUserManager.isLogined()) {
             AddFollowedFuturesTask requset = new AddFollowedFuturesTask(mContext, item.mId,
-                    new Response.Listener<ErrorInfo>() {
+                    new Response.Listener<Void>() {
                         @Override
-                        public void onResponse(ErrorInfo errorInfo) {
+                        public void onResponse(Void result) {
                             mDataManager.addFollowedFutures(item);
                             mAdapter.notifyDataSetChanged();
                             Toast.makeText(mContext, R.string.add_follow_success, Toast.LENGTH_SHORT).show();

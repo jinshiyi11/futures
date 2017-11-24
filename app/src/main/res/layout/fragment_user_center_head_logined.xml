@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_head"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" xmlns:riv="http://schemas.android.com/apk/res-auto">
+
+    <ImageView
+        android:id="@+id/iv_head_bg"
+        android:layout_width="74dp"
+        android:layout_height="74dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:scaleType="fitCenter"
+        android:layout_marginLeft="16dp"
+        android:src="@drawable/ring" />
+
+    <com.makeramen.RoundedImageView
+        android:id="@+id/iv_head"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="21dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_default_head"
+        riv:riv_corner_radius="32dp" />
+
+    <Button
+        android:id="@+id/btn_user_profile"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="11dp"
+        android:background="@drawable/ic_round_next" />
+
+    <TextView
+        android:id="@+id/tv_nickname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="13dp"
+        android:layout_toLeftOf="@+id/btn_user_profile"
+        android:layout_toRightOf="@+id/iv_head_bg"
+        android:textColor="#ffffff"
+        android:textSize="19sp" />
+
+</RelativeLayout>

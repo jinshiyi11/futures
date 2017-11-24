@@ -8,8 +8,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 
-import com.shuai.futures.event.FollowedFuturesAddedEvent;
+import com.shuai.futures.event.AddFollowFuturesEvent;
 import com.shuai.futures.event.FollowedFuturesRefreshedEvent;
+import com.shuai.futures.event.RemoveFollowFuturesEvent;
 import com.shuai.futures.utils.IoUtils;
 import com.shuai.futures.utils.LogUtils;
 
@@ -17,6 +18,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
+import de.greenrobot.event.Subscribe;
 
 /**
  *
@@ -63,6 +65,7 @@ public class DataManager {
             IoUtils.closeQuietly(cursor);
         }
 
+        EventBus.getDefault().register(this);
     }
 
     public List<FuturesInfo> getFollowedFutures() {
@@ -78,6 +81,19 @@ public class DataManager {
             }
         }
         return found;
+    }
+
+    @Subscribe
+    public void clearFollowedFutures(LoginStateChanged event) {
+        if (event == LoginStateChanged.Logout) {
+            mFollowedFutures.clear();
+            try {
+                SQLiteDatabase database = mDbHelper.getWritableDatabase();
+                database.delete(DbHelper.FOLLOWED_TABLE, null, null);
+            } catch (Exception e) {
+                LogUtils.e(TAG, "", e);
+            }
+        }
     }
 
     public void refreshFollowedFutures(List<FuturesInfo> futuresInfoList) {
@@ -126,7 +142,27 @@ public class DataManager {
         } catch (Exception e) {
             LogUtils.e(TAG, "", e);
         }
-        EventBus.getDefault().post(new FollowedFuturesAddedEvent(item));
+        EventBus.getDefault().post(new AddFollowFuturesEvent(item));
+    }
+
+    public void removeFollowedFutures(FuturesInfo item) {
+        if (!isFollowedFutures(item.mId)) {
+            return;
+        }
+
+        try {
+            for(FuturesInfo futures: mFollowedFutures){
+                if(futures.mId.equals(item.mId)){
+                    mFollowedFutures.remove(futures);
+                    break;
+                }
+            }
+            SQLiteDatabase database = mDbHelper.getWritableDatabase();
+            database.delete(DbHelper.FOLLOWED_TABLE, DbHelper.COLUMN_FUTURES_ID+"=?", new String[]{item.mId});
+        } catch (Exception e) {
+            LogUtils.e(TAG, "", e);
+        }
+        EventBus.getDefault().post(new RemoveFollowFuturesEvent(item));
     }
 
     private static class DbHelper extends SQLiteOpenHelper {

@@ -62,9 +62,9 @@ public class Constants {
 
     static {
         if (!SERVER_ONLINE) {
-            SERVER_ADDRESS = "http://192.168.1.100:8081";
+            SERVER_ADDRESS = "http://192.168.1.102:8081";
         } else {
-            SERVER_ADDRESS = "http://hehedream.duapp.com";
+            SERVER_ADDRESS = "http://198.13.34.123";
         }
     }
 }

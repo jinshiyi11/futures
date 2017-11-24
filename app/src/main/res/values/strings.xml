@@ -10,10 +10,12 @@
     <string name="launch_app_market_failed">您的手机上未发现应用市场</string>
     <string name="no_network_hint">无法连接网络，请点击刷新</string>
     <string name="one_more_exit">再按一次退出</string>
+    <string name="service_phone">000-000-0000</string>
 
     <string name="add_follow_success">添加自选成功</string>
     <string name="add_follow_failed">添加自选失败</string>
     <string name="original_comment">&lt;font color=&quot;#ed6a48&quot;&gt;@%1$s&lt;/font&gt; &lt;font color=&quot;#999999&quot;&gt;%2$s&lt;/font&gt;</string>
 
     <string name="price_tpl">%1$s &lt;font color=&quot;%2$s&quot;&gt;%3$s&lt;/font&gt;</string>
+    <string name="title_activity_about">AboutActivity</string>
 </resources>

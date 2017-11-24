@@ -18,13 +18,19 @@ import com.android.volley.VolleyError;
 import com.shuai.futures.MyApplication;
 import com.shuai.futures.R;
 import com.shuai.futures.data.Constants;
+import com.shuai.futures.data.DataManager;
 import com.shuai.futures.data.FuturesInfo;
 import com.shuai.futures.data.FuturesPrice;
 import com.shuai.futures.data.KlineItem;
 import com.shuai.futures.data.LoadingStatus;
 import com.shuai.futures.data.TimeLineItem;
+import com.shuai.futures.event.AddFollowFuturesEvent;
+import com.shuai.futures.event.RemoveFollowFuturesEvent;
+import com.shuai.futures.logic.UserManager;
+import com.shuai.futures.protocol.AddFollowedFuturesTask;
 import com.shuai.futures.protocol.GetFuturesPriceListTask;
 import com.shuai.futures.protocol.ProtocolUtils;
+import com.shuai.futures.protocol.RemoveFollowedFuturesTask;
 import com.shuai.futures.ui.base.BaseFragment;
 import com.shuai.futures.ui.base.BaseFragmentActivity;
 import com.shuai.futures.utils.Utils;
@@ -40,6 +46,9 @@ import com.viewpagerindicator.TabViewInterface;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.greenrobot.event.EventBus;
+import de.greenrobot.event.Subscribe;
+
 /**
  *
  */
@@ -49,6 +58,8 @@ public class CandleStickActivity extends BaseFragmentActivity implements OnTimeL
     private String mFuturesTitle;
     private LoadingStatus mStatus = LoadingStatus.STATUS_LOADING;
     private RequestQueue mRequestQueue;
+    private DataManager mDataManager;
+    private UserManager mUserManager;
     private Handler mHandler = new Handler();
 
     private ViewGroup mNoNetworkContainer;
@@ -70,6 +81,8 @@ public class CandleStickActivity extends BaseFragmentActivity implements OnTimeL
     private TimeLineHead mTimelineHead;
     private KlineHead mKlineHead;
     private LinearLayout mLlComment;
+    private LinearLayout mLlFollow;
+    private TextView mTvFollow;
 
     private FuturesPrice mPriceInfo;
 
@@ -94,6 +107,8 @@ public class CandleStickActivity extends BaseFragmentActivity implements OnTimeL
         mTvTitle = (TextView) findViewById(R.id.tv_title);
         mTvTitle.setText("期货");
 
+        mUserManager=UserManager.getInstance();
+        mDataManager = DataManager.getInstance();
         mRequestQueue = MyApplication.getRequestQueue();
         mNoNetworkContainer = (ViewGroup) findViewById(R.id.no_network_container);
         mLoadingContainer = (ViewGroup) findViewById(R.id.loading_container);
@@ -124,16 +139,22 @@ public class CandleStickActivity extends BaseFragmentActivity implements OnTimeL
                 getSupportFragmentManager());
         mViewPager.setOffscreenPageLimit(TAB_TITLES.length);
         mIndicator = (TabPageIndicatorEx) findViewById(R.id.tbi_order);
-        mLlComment= (LinearLayout) findViewById(R.id.ll_comment);
+        mLlComment = (LinearLayout) findViewById(R.id.ll_comment);
         mLlComment.setOnClickListener(this);
+        mLlFollow = (LinearLayout) findViewById(R.id.ll_follow);
+        mLlFollow.setOnClickListener(this);
+        mTvFollow = (TextView) findViewById(R.id.tv_follow);
 
+        EventBus.getDefault().register(this);
         setStatus(LoadingStatus.STATUS_LOADING);
         getFuturesPrice();
+        updateFollowState();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        EventBus.getDefault().unregister(this);
         mHandler.removeCallbacksAndMessages(null);
         if (mRequestQueue != null) {
             mRequestQueue.cancelAll(this);
@@ -260,16 +281,91 @@ public class CandleStickActivity extends BaseFragmentActivity implements OnTimeL
         }
     }
 
+    @Subscribe
+    public void onEvent(AddFollowFuturesEvent event){
+        if(event.getItem().mId.equals(mFuturesId)) {
+            updateFollowState();
+        }
+    }
+
+    @Subscribe
+    public void onEvent(RemoveFollowFuturesEvent event){
+        if(event.getItem().mId.equals(mFuturesId)) {
+            updateFollowState();
+        }
+    }
+
+    private void updateFollowState() {
+        boolean isFollowed = mDataManager.isFollowedFutures(mFuturesId);
+        if (isFollowed) {
+            mTvFollow.setText("取消自选");
+        } else {
+            mTvFollow.setText("添加自选");
+        }
+    }
+
     @Override
     public void onClick(View v) {
-        int id=v.getId();
-        switch (id){
+        int id = v.getId();
+        switch (id) {
             case R.id.ll_comment: {
-                Intent intent=new Intent(mContext,CommentListActivity.class);
-                intent.putExtra(Constants.EXTRA_FUTURES_ID,mFuturesId);
-                intent.putExtra(Constants.EXTRA_FUTURES_NAME,mFuturesName);
-                intent.putExtra(Constants.EXTRA_FUTURES_TITLE,mFuturesTitle);
+                Intent intent = new Intent(mContext, CommentListActivity.class);
+                intent.putExtra(Constants.EXTRA_FUTURES_ID, mFuturesId);
+                intent.putExtra(Constants.EXTRA_FUTURES_NAME, mFuturesName);
+                intent.putExtra(Constants.EXTRA_FUTURES_TITLE, mFuturesTitle);
                 startActivity(intent);
+                break;
+            }
+            case R.id.ll_follow: {
+                boolean isFollowed = mDataManager.isFollowedFutures(mFuturesId);
+                if(mUserManager.isLogined()){
+                    if (!isFollowed) {
+                        AddFollowedFuturesTask request = new AddFollowedFuturesTask(mContext, mFuturesId,
+                                new Response.Listener<Void>() {
+                                    @Override
+                                    public void onResponse(Void result) {
+                                        Utils.showShortToast(mContext, "添加成功");
+                                        mDataManager.addFollowedFutures(new FuturesInfo(mFuturesId,mFuturesName,mFuturesTitle));
+                                    }
+                                },
+                                new Response.ErrorListener() {
+                                    @Override
+                                    public void onErrorResponse(VolleyError error) {
+                                        Utils.showShortToast(mContext, ProtocolUtils
+                                                .getErrorInfo(error).getErrorMessage());
+                                    }
+                                });
+                        request.setTag(this);
+                        mRequestQueue.add(request);
+                    } else {
+                        RemoveFollowedFuturesTask request = new RemoveFollowedFuturesTask(mContext, mFuturesId,
+                                new Response.Listener<Void>() {
+                                    @Override
+                                    public void onResponse(Void result) {
+                                        Utils.showShortToast(mContext, "删除成功");
+                                        mDataManager.removeFollowedFutures(new FuturesInfo(mFuturesId,mFuturesName,mFuturesTitle));
+                                    }
+                                },
+                                new Response.ErrorListener() {
+                                    @Override
+                                    public void onErrorResponse(VolleyError error) {
+                                        Utils.showShortToast(mContext, ProtocolUtils
+                                                .getErrorInfo(error).getErrorMessage());
+                                    }
+                                });
+                        request.setTag(this);
+                        mRequestQueue.add(request);
+                    }
+                }else{
+                    if(!isFollowed){
+                        mDataManager.addFollowedFutures(new FuturesInfo(mFuturesId,mFuturesName,mFuturesTitle));
+                        Utils.showShortToast(mContext, "添加成功");
+                    }else{
+                        mDataManager.removeFollowedFutures(new FuturesInfo(mFuturesId,mFuturesName,mFuturesTitle));
+                        Utils.showShortToast(mContext, "删除成功");
+                    }
+                }
+
                 break;
             }
         }

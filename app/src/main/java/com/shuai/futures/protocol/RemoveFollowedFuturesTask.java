@@ -23,11 +23,11 @@ import java.util.List;
 /**
  * 删除关注
  */
-public class RemoveFollowedFuturesTask extends BaseAutoReloginTask<ErrorInfo> {
+public class RemoveFollowedFuturesTask extends BaseAutoReloginTask<Void> {
     private static final String TAG = RemoveFollowedFuturesTask.class.getSimpleName();
 
-    public RemoveFollowedFuturesTask(Context context, String futuresId, Listener<ErrorInfo> listener, Response.ErrorListener errorListener) {
-        super(Method.POST, UrlHelper.getUrl(context, "api/removeFollowedFutures"),
+    public RemoveFollowedFuturesTask(Context context, String futuresId, Listener<Void> listener, Response.ErrorListener errorListener) {
+        super(Method.POST, UrlHelper.getUrl(context, "api/follow/remove"),
                 getBody(context, futuresId), listener, errorListener);
     }
 
@@ -43,7 +43,7 @@ public class RemoveFollowedFuturesTask extends BaseAutoReloginTask<ErrorInfo> {
     }
 
     @Override
-    protected Response<ErrorInfo> parseNetworkResponse(NetworkResponse response) {
+    protected Response<Void> parseNetworkResponse(NetworkResponse response) {
         try {
             String jsonString = new String(response.data, "UTF-8");
             if (Constants.DEBUG) {
@@ -57,7 +57,7 @@ public class RemoveFollowedFuturesTask extends BaseAutoReloginTask<ErrorInfo> {
                 return Response.error(result);
             }
 
-            return Response.success(result, HttpHeaderParser.parseCacheHeaders(response));
+            return Response.success(null, HttpHeaderParser.parseCacheHeaders(response));
         } catch (UnsupportedEncodingException e) {
             return Response.error(new ParseError(e));
         } catch (Exception e) {

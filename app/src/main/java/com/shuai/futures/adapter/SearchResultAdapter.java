@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.shuai.futures.R;
 import com.shuai.futures.data.DataManager;
 import com.shuai.futures.data.FuturesInfo;
+import com.shuai.futures.utils.NavigateUtils;
 
 import java.util.List;
 
@@ -19,6 +20,7 @@ import java.util.List;
  *
  */
 public class SearchResultAdapter extends ArrayAdapter<FuturesInfo> {
+    private Context mContext;
     private LayoutInflater mInflater;
     private DataManager mDataManager;
     private AddFollowListener mAddFollowListener;
@@ -29,6 +31,7 @@ public class SearchResultAdapter extends ArrayAdapter<FuturesInfo> {
 
     public SearchResultAdapter(Context context, @NonNull List<FuturesInfo> futuresList) {
         super(context, 0, futuresList);
+        mContext = context;
         mDataManager = DataManager.getInstance();
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
@@ -59,6 +62,13 @@ public class SearchResultAdapter extends ArrayAdapter<FuturesInfo> {
             holder = (ViewHolder) view.getTag();
         }
 
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavigateUtils.showCandleStickActivity(mContext, item);
+            }
+        });
+
         holder.mTvTitle.setText(item.mTitle);
         holder.mTvName.setText(item.mName);
         if (mDataManager.isFollowedFutures(item.mId)) {
@@ -69,7 +79,7 @@ public class SearchResultAdapter extends ArrayAdapter<FuturesInfo> {
             holder.mBtnAdd.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(mAddFollowListener!=null){
+                    if (mAddFollowListener != null) {
                         mAddFollowListener.onAddFollow(item);
                     }
                 }

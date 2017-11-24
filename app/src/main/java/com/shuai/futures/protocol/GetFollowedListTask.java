@@ -29,8 +29,8 @@ public class GetFollowedListTask extends BaseAutoReloginTask<List<FuturesInfo>> 
     private static final String TAG = GetFollowedListTask.class.getSimpleName();
 
     public GetFollowedListTask(Context context, Listener<List<FuturesInfo>> listener, Response.ErrorListener errorListener) {
-        super(Method.GET, UrlHelper.getUrl(context, "api/getFollowedList"),
-                null, listener, errorListener);
+        super(Method.GET, UrlHelper.getUrl(context, "api/follow/getAll"),
+                getBody(context), listener, errorListener);
     }
 
     private static List<BasicNameValuePair> getBody(Context context){

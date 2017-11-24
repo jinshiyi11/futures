@@ -2,7 +2,6 @@ package com.shuai.futures.ui;
 
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -23,8 +22,10 @@ import com.shuai.futures.data.DataManager;
 import com.shuai.futures.data.FuturesInfo;
 import com.shuai.futures.data.FuturesPrice;
 import com.shuai.futures.data.LoadingStatus;
-import com.shuai.futures.event.FollowedFuturesAddedEvent;
+import com.shuai.futures.data.LoginStateChanged;
+import com.shuai.futures.event.AddFollowFuturesEvent;
 import com.shuai.futures.event.FollowedFuturesRefreshedEvent;
+import com.shuai.futures.event.RemoveFollowFuturesEvent;
 import com.shuai.futures.logic.UserManager;
 import com.shuai.futures.protocol.GetFollowedListTask;
 import com.shuai.futures.protocol.GetFuturesPriceListTask;
@@ -204,6 +205,12 @@ public class FollowFragment extends BaseTabFragment {
 
     private void getFuturesPrice() {
         if (mFollowedList.size() == 0) {
+            mHandler.removeCallbacks(mRefreshRunnable);
+            if (mRequestQueue != null) {
+                mRequestQueue.cancelAll(this);
+            }
+            mFuturesPriceList.clear();
+            mAdapter.notifyDataSetChanged();
             setStatus(LoadingStatus.STATUS_GOT_DATA);
             mListView.onRefreshComplete();
             updateEmptyView();
@@ -250,12 +257,24 @@ public class FollowFragment extends BaseTabFragment {
     }
 
     @Subscribe
+    public void onEvent(LoginStateChanged event){
+        if(event==LoginStateChanged.Logined) {
+            getFollowedList();
+        }
+    }
+
+    @Subscribe
     public void onEvent(FollowedFuturesRefreshedEvent event) {
         getFuturesPrice();
     }
 
     @Subscribe
-    public void onEvent(FollowedFuturesAddedEvent event) {
+    public void onEvent(AddFollowFuturesEvent event) {
+        getFuturesPrice();
+    }
+
+    @Subscribe
+    public void onEvent(RemoveFollowFuturesEvent event) {
         getFuturesPrice();
     }
 }

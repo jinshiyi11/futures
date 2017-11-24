@@ -5,4 +5,5 @@
     <dimen name="default_title_bottom_line_height">1px</dimen>
     <dimen name="default_split_line_height">1px</dimen>
     <dimen name="default_dialog_button_height">46dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
 </resources>

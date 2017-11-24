@@ -107,7 +107,7 @@ public class CommentAdapter extends ArrayAdapter<Comment> {
 		holder.mTvCommentUserName.setText(item.getCommentUserNickName());
 		
 		SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US);
-		holder.mTvCommentTime.setText(String.format("%1$s", format.format(new Date(item.getCommentTime()*1000))));
+		holder.mTvCommentTime.setText(String.format("%1$s", format.format(new Date(item.getCommentTime()))));
 		if(!TextUtils.isEmpty(item.getCommentContent())){
 			holder.mTvCommentContent.setVisibility(View.VISIBLE);
 			holder.mTvCommentContent.setText(item.getCommentContent());

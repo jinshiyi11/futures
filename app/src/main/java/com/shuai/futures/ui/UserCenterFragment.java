@@ -24,6 +24,7 @@ import com.shuai.futures.utils.NavigateUtils;
 import de.greenrobot.event.EventBus;
 import de.greenrobot.event.Subscribe;
 
+
 /**
  * "我的"tab页
  */
@@ -137,11 +138,11 @@ public class UserCenterFragment extends BaseTabFragment implements OnClickListen
 	 * 显示已登录用户界面
 	 */
 	private void showUserLoginedUi() {
-//		FragmentTransaction transaction = mFragmentManager.beginTransaction();
-//		transaction.replace(R.id.rl_head, new UserCenterLoginedHeadFragment());
-//		transaction.replace(R.id.fl_orderlist, new UserCenterOrderFragment(),"UserCenter_");
-//		transaction.commitAllowingStateLoss();
-//
+		FragmentTransaction transaction = mFragmentManager.beginTransaction();
+		transaction.replace(R.id.rl_head, new UserCenterLoginedHeadFragment());
+		transaction.replace(R.id.fl_orderlist, new UserCenterSettingsFragment());
+		transaction.commitAllowingStateLoss();
+
 //		GetUserExtendInfoTask request=new GetUserExtendInfoTask(mContext,null,null);
 //		request.setTag(this);
 //    	mRequestQueue.add(request);
@@ -159,8 +160,8 @@ public class UserCenterFragment extends BaseTabFragment implements OnClickListen
 			break;
 		case R.id.iv_settings:
 		{
-//			Intent intent=new Intent(mContext, SettingsActivity.class);
-//			startActivity(intent);
+			Intent intent=new Intent(mContext, SettingsActivity.class);
+			startActivity(intent);
 		}
 			break;
 		case R.id.ll_balance:

@@ -5,10 +5,10 @@ import com.shuai.futures.data.FuturesInfo;
 /**
  *
  */
-public class FollowedFuturesAddedEvent {
+public class AddFollowFuturesEvent {
     private FuturesInfo mItem;
 
-    public FollowedFuturesAddedEvent(FuturesInfo item) {
+    public AddFollowFuturesEvent(FuturesInfo item) {
         this.mItem = item;
     }
 

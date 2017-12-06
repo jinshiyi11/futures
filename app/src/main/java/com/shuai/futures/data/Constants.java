@@ -12,7 +12,7 @@ public class Constants {
     /**
      * 是使用线上服务还是开发环境的服务
      */
-    public static boolean SERVER_ONLINE = false;
+    public static boolean SERVER_ONLINE = true;
 
     public static final String SERVER_ADDRESS;
 
@@ -64,7 +64,7 @@ public class Constants {
         if (!SERVER_ONLINE) {
             SERVER_ADDRESS = "http://192.168.1.102:8081";
         } else {
-            SERVER_ADDRESS = "http://198.13.34.123";
+            SERVER_ADDRESS = "http://39.106.50.167";
         }
     }
 }

@@ -8,6 +8,7 @@ import com.android.volley.ParseError;
 import com.android.volley.Response;
 import com.android.volley.Response.Listener;
 import com.android.volley.toolbox.HttpHeaderParser;
+import com.shuai.futures.BuildConfig;
 import com.shuai.futures.data.Constants;
 import com.shuai.futures.data.FuturesInfo;
 import com.shuai.futures.data.FuturesPrice;
@@ -61,22 +62,38 @@ public class GetFuturesPriceListTask extends BaseTask<List<FuturesPrice>> {
             String[] values;
             //var hq_str_M1801="豆粕1801,145959,2741,2750,2730,2737,2742,2743,2742,2740,2739,316,86,1822500,943724,连,豆粕,2017-09-07,1,2750.000,2690.000,2754.000,2690.000,2855.000,2690.000,2987.000,2658.000,31.911";
             for (String line : lines) {
-                if(line.isEmpty()){
+                if (line.isEmpty()) {
                     continue;
                 }
-                id = line.substring(line.indexOf("hq_str_") + 7, line.indexOf('='));
-                values = line.substring(line.indexOf('\"') + 1, line.lastIndexOf('\"')).split(",");
-                FuturesPrice item = new FuturesPrice();
-                item.mName = id;
-                item.mTitle = values[0];
-                item.mCurrentPrice = Double.parseDouble(values[8]);
-                item.mLastdayPrice = Double.parseDouble(values[10]);
+                try {
+                    FuturesPrice item = new FuturesPrice();
+                    id = line.substring(line.indexOf("hq_str_") + 7, line.indexOf('='));
+                    item.mName = id;
+                    values = line.substring(line.indexOf('\"') + 1, line.lastIndexOf('\"')).split(",");
+                    item.mTitle = values[0];
+                    if(isStock(id)){
+                        item.mCurrentPrice = Double.parseDouble(values[3]);
+                        item.mLastdayPrice = Double.parseDouble(values[2]);
 
-                item.mHigh = Double.parseDouble(values[3]);
-                item.mLow = Double.parseDouble(values[4]);
-                item.mOpen = Double.parseDouble(values[2]);
-                item.mVolume = Integer.parseInt(values[13]);
-                result.add(item);
+                        item.mHigh = Double.parseDouble(values[4]);
+                        item.mLow = Double.parseDouble(values[5]);
+                        item.mOpen = Double.parseDouble(values[1]);
+                        item.mVolume = Integer.parseInt(values[8]);
+                    }else {
+                        item.mCurrentPrice = Double.parseDouble(values[8]);
+                        item.mLastdayPrice = Double.parseDouble(values[10]);
+
+                        item.mHigh = Double.parseDouble(values[3]);
+                        item.mLow = Double.parseDouble(values[4]);
+                        item.mOpen = Double.parseDouble(values[2]);
+                        item.mVolume = Integer.parseInt(values[13]);
+                    }
+                    result.add(item);
+                } catch (Exception e) {
+                    if (BuildConfig.DEBUG) {
+                        Log.e(TAG, "", e);
+                    }
+                }
             }
 
             if (result.size() == 0) {
@@ -88,6 +105,14 @@ public class GetFuturesPriceListTask extends BaseTask<List<FuturesPrice>> {
             return Response.error(new ParseError(e));
         } catch (Exception e) {
             return Response.error(new ParseError(e));
+        }
+    }
+
+    private static boolean isStock(String id) {
+        if (id.startsWith("sh") || id.startsWith("sz")) {
+            return true;
+        } else {
+            return false;
         }
     }
 }

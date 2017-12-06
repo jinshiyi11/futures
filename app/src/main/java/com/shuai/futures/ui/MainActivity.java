@@ -16,7 +16,6 @@ import android.widget.TabHost;
 import android.widget.TabWidget;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.android.volley.RequestQueue;
 import com.shuai.futures.MyApplication;
 import com.shuai.futures.R;
@@ -27,11 +26,11 @@ import com.shuai.futures.logic.UserManager;
 import com.shuai.futures.net.ConnectionChangeMonitor;
 import com.shuai.futures.ui.base.BaseFragmentActivity;
 import com.shuai.futures.utils.NavigateUtils;
-
 import java.util.ArrayList;
-
 import de.greenrobot.event.EventBus;
 import de.greenrobot.event.Subscribe;
+
+import static android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
 
 
 public class MainActivity extends BaseFragmentActivity {

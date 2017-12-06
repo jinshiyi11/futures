@@ -6,7 +6,10 @@
         <item name="android:windowNoTitle">true</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="android:textColorPrimary">#000000</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:fitsSystemWindows">true</item>
+        <!--<item name="android:clipToPadding">false</item>-->
     </style>
 
     <style name="default_dialog" parent="@android:style/Theme.Dialog">

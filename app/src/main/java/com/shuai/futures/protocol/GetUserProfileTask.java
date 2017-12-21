@@ -16,10 +16,11 @@ import com.shuai.futures.data.Constants;
 import com.shuai.futures.data.UserInfo;
 import com.shuai.futures.logic.UserManager;
 import org.apache.http.message.BasicNameValuePair;
+import org.greenrobot.eventbus.EventBus;
+
 import java.io.UnsupportedEncodingException;
 import java.util.LinkedList;
 import java.util.List;
-import de.greenrobot.event.EventBus;
 
 /**
  * 获取用户的基本信息

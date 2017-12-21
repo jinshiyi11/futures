@@ -85,7 +85,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
         mBtnLogin.setOnClickListener(this);
         mLlWeixinLogin.setOnClickListener(this);
         
-        String lastLogoutAccount = Config.getInstance().getLastLogoutAccount();
+        String lastLogoutAccount = Config.getInstance().getLastPhone();
         if(!TextUtils.isEmpty(lastLogoutAccount)){
         	mEtAccount.setText(lastLogoutAccount);
         	
@@ -164,9 +164,6 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
         case R.id.btn_login:
         	loginByAccount();
         	break;
-        case R.id.ll_weixin_login:
-        	loginByWeixin();
-        	break;
         }
     }
     
@@ -191,7 +188,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 		}
     	
     	final String md5Password=Utils.md5(password);
-    	LoginByAccountTask request=new LoginByAccountTask(this,UserManager.LOGIN_BY_PHONE,account,md5Password,new Listener<TokenInfo>() {
+    	LoginByAccountTask request=new LoginByAccountTask(this,account,md5Password,new Listener<TokenInfo>() {
 
 			@Override
 			public void onResponse(TokenInfo tokenInfo) {
@@ -209,27 +206,4 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 		request.setTag(this);
         mRequestQueue.add(request);
     }
-    
-    /**
-     * 通过微信登录
-     */
-    private void loginByWeixin(){
-    	mLoginByWeixinTask=new RegisterByWeixinTask(this, new Listener<RegisterResult>() {
-
-			@Override
-			public void onResponse(RegisterResult result) {
-				UserManager.getInstance().onRegisterByWeixinSuccess(result.getUid(), Utils.md5(result.getPassword()));
-			}
-		},new ErrorListener(){
-
-			@Override
-			public void onErrorResponse(VolleyError error) {
-				Utils.showShortToast(mContext, ProtocolUtils.getErrorInfo(error).getErrorMessage());
-			}
-
-		});
-
-    	mLoginByWeixinTask.login();
-    }
-    
 }

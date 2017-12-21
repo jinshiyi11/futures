@@ -19,29 +19,21 @@ import com.shuai.futures.protocol.LoginResult;
 import com.shuai.futures.protocol.ProtocolUtils;
 import com.shuai.futures.protocol.TokenInfo;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import de.greenrobot.event.EventBus;
 
 public class UserManager {
 	private final static String TAG = UserManager.class.getSimpleName();
 
 	public final static int NOT_LOGIN = 0;
 
-	/**
-	 * 通过手机号密码方式登录
-	 */
-	public final static int LOGIN_BY_PHONE = 1;
-
-	/**
-	 * 通过uid+密码方式登录
-	 */
-	public final static int LOGIN_BY_WEIXIN = 2;
-
 	private static UserManager mSelf;
 	private Context mContext;
+	private Config mConfig;
     private AtomicBoolean mIsLogining=new AtomicBoolean(false);
     private boolean mIsLogined;
 	private UserInfo mAccountInfo;
@@ -66,6 +58,7 @@ public class UserManager {
 	}
 
 	private UserManager() {
+		mConfig=Config.getInstance();
 	}
 
 	public void addLoginResultListener(LoginResultListener listener) {
@@ -86,6 +79,13 @@ public class UserManager {
 
 	public void init(Context context) {
 		mContext = context;
+		String phone = mConfig.getPhone();
+		if(!TextUtils.isEmpty(phone)){
+			mAccountInfo=new UserInfo();
+			mAccountInfo.setPhoneNumber(phone);
+			mAccountInfo.setPassword(mConfig.getPassword());
+		}
+
 	}
 
     public boolean isLogined() {
@@ -95,10 +95,6 @@ public class UserManager {
     public UserInfo getUserInfo() {
         return mAccountInfo;
     }
-
-	public void setAccountInfo(UserInfo accountInfo) {
-		mAccountInfo=accountInfo;
-	}
 
 	private void notifyLoginResult(LoginResult result) {
 		boolean loginStateChanged=false;
@@ -121,17 +117,14 @@ public class UserManager {
 	}
 
 	public void logout(boolean byUser) {
-		if (mAccountInfo != null
-				&& mAccountInfo.getLoginType() == UserManager.LOGIN_BY_PHONE){
-			Config.getInstance().setLastLogoutAccount(
-					mAccountInfo.getPhoneNumber());
+		if (mAccountInfo != null){
+			Config.getInstance().setLastPhone(mAccountInfo.getPhoneNumber());
 		}
 
 		if(byUser) {
 			//如果是用户主动logout，则清除用户相关信息
 			mAccountInfo = null;
 		}
-		Config.getInstance().saveConfig();
 
 		if(!mIsLogined)
 			return;
@@ -169,28 +162,22 @@ public class UserManager {
 			return;
 
 		int loginType = mAccountInfo.getLoginType();
-		String account = null;
-		if (loginType == UserManager.LOGIN_BY_PHONE) {
-			account = mAccountInfo.getPhoneNumber();
-		} else if (loginType == UserManager.LOGIN_BY_WEIXIN) {
-			account = String.valueOf(mAccountInfo.getUid());
-		}
+		String account = mAccountInfo.getPhoneNumber();
 		if(TextUtils.isEmpty(account))
 			return;
 
 		if (mIsLogining.get()) {
-			Log.d(TAG, "is logining!");
 			return;
 		}
 
 		mIsLogining.set(true);
-		Request<?> request = null;
-		request = new LoginByAccountTask(mContext, loginType, account,
+		Request<?> request =  new LoginByAccountTask(mContext, account,
 				mAccountInfo.getPassword(), new Response.Listener<TokenInfo>() {
 
 			@Override
 			public void onResponse(TokenInfo tokenInfo) {
 				mIsLogining.set(false);
+				mAccountInfo.setUid(tokenInfo.getUid());
 				mAccountInfo.setToken(tokenInfo.getToken());
 				notifyLoginResult(new LoginResult());
 			}
@@ -216,10 +203,9 @@ public class UserManager {
         mAccountInfo.setUid(uid);
         mAccountInfo.setToken(token);
         mAccountInfo.setPassword(md5Password);
-        mAccountInfo.setLoginType(LOGIN_BY_PHONE);
         mAccountInfo.setPhoneNumber(phone);
 
-        Config.getInstance().saveConfig();
+        mConfig.setPhoneAndPassword(phone,md5Password);
         notifyLoginResult(new LoginResult());
 
         EventBus.getDefault().post(mAccountInfo);
@@ -234,37 +220,8 @@ public class UserManager {
         mAccountInfo.setPhoneNumber(phone);
         mAccountInfo.setPassword(md5Password);
         mAccountInfo.setToken(token);
-        mAccountInfo.setLoginType(LOGIN_BY_PHONE);
 
-        Config.getInstance().saveConfig();
-        notifyLoginResult(new LoginResult());
-
-        EventBus.getDefault().post(mAccountInfo);
-    }
-
-    public void onRegisterByWeixinSuccess(String weixinId,String md5Password){
-        mAccountInfo = new UserInfo();
-        mAccountInfo.setWeixinId(weixinId);
-        mAccountInfo.setPassword(md5Password);
-        mAccountInfo.setLoginType(LOGIN_BY_WEIXIN);
-
-        Config.getInstance().saveConfig();
-
-        EventBus.getDefault().post(mAccountInfo);
-    }
-
-    public void onLoginByWeixinSuccess(long uid,String weixinId,String md5Password, String token) {
-        if(mAccountInfo==null){
-            mAccountInfo = new UserInfo();
-        }
-
-        mAccountInfo.setUid(uid);
-        mAccountInfo.setWeixinId(weixinId);
-        mAccountInfo.setPassword(md5Password);
-        mAccountInfo.setToken(token);
-        mAccountInfo.setLoginType(LOGIN_BY_WEIXIN);
-
-        Config.getInstance().saveConfig();
+		mConfig.setPhoneAndPassword(phone,md5Password);
         notifyLoginResult(new LoginResult());
 
         EventBus.getDefault().post(mAccountInfo);

@@ -31,10 +31,11 @@ import com.shuai.futures.utils.StorageUtils;
 import com.shuai.futures.protocol.XLabelInfo;
 import com.umeng.analytics.MobclickAgent;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import de.greenrobot.event.EventBus;
 
 public class MyApplication extends Application {
     private static final String TAG = MyApplication.class.getSimpleName();
@@ -97,7 +98,6 @@ public class MyApplication extends Application {
         initImageLoader();
         HttpResponseCache.init(this);
 
-        Config.getInstance().loadConfig();
         DataManager.init(this);
         mConnectionChangeMonitor = new ConnectionChangeMonitor(this);
         mConnectionChangeMonitor.startMonitor();
@@ -108,8 +108,8 @@ public class MyApplication extends Application {
 
 //        EventBus.getDefault().register(this);
 
-//        if(!userManager.isLogined())
-//            userManager.autoLogin();
+        if(!userManager.isLogined())
+            userManager.autoLogin();
 
 //        Set<String> tags=new HashSet<String>();
 //        tags.add(AppUtils.getChannel(mContext));

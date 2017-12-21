@@ -21,8 +21,8 @@ import com.shuai.futures.logic.UserManager;
 import com.shuai.futures.ui.base.BaseTabFragment;
 import com.shuai.futures.utils.NavigateUtils;
 
-import de.greenrobot.event.EventBus;
-import de.greenrobot.event.Subscribe;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 
 /**

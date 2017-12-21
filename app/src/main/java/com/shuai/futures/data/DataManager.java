@@ -14,11 +14,12 @@ import com.shuai.futures.event.RemoveFollowFuturesEvent;
 import com.shuai.futures.utils.IoUtils;
 import com.shuai.futures.utils.LogUtils;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
 import java.util.LinkedList;
 import java.util.List;
 
-import de.greenrobot.event.EventBus;
-import de.greenrobot.event.Subscribe;
 
 /**
  *

@@ -19,17 +19,15 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.umeng.analytics.pro.dm.i;
-
 /**
- * 获取日线数据
+ * 获取期货的k线数据
  */
-public class GetFuturesDailyKlineTask extends BaseTask<List<KlineItem>> {
-    private static final String TAG = GetFuturesDailyKlineTask.class.getSimpleName();
+public class GetFuturesKlineTask extends BaseTask<List<KlineItem>> {
+    private static final String TAG = GetFuturesKlineTask.class.getSimpleName();
     private SimpleDateFormat mFormat;
     private KlineType mKlineType;
 
-    public GetFuturesDailyKlineTask(Context context, String futureId, KlineType klineType, Listener<List<KlineItem>> listener, Response.ErrorListener errorListener) {
+    public GetFuturesKlineTask(Context context, String futureId, KlineType klineType, Listener<List<KlineItem>> listener, Response.ErrorListener errorListener) {
         super(Method.GET, getUrl(futureId, klineType), null, listener, errorListener);
         mKlineType = klineType;
     }

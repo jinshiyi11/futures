@@ -43,11 +43,12 @@ import com.shuai.futures.view.chart.TimeLineHead;
 import com.viewpagerindicator.TabPageIndicatorEx;
 import com.viewpagerindicator.TabViewInterface;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import de.greenrobot.event.EventBus;
-import de.greenrobot.event.Subscribe;
 
 /**
  *

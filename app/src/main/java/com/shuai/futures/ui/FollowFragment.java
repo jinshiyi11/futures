@@ -34,11 +34,12 @@ import com.shuai.futures.ui.base.BaseTabFragment;
 import com.shuai.futures.utils.NavigateUtils;
 import com.shuai.futures.utils.Utils;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import de.greenrobot.event.EventBus;
-import de.greenrobot.event.Subscribe;
 
 /**
  * 我的自选

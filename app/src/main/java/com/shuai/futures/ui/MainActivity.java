@@ -26,11 +26,11 @@ import com.shuai.futures.logic.UserManager;
 import com.shuai.futures.net.ConnectionChangeMonitor;
 import com.shuai.futures.ui.base.BaseFragmentActivity;
 import com.shuai.futures.utils.NavigateUtils;
-import java.util.ArrayList;
-import de.greenrobot.event.EventBus;
-import de.greenrobot.event.Subscribe;
 
-import static android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
+import java.util.ArrayList;
 
 
 public class MainActivity extends BaseFragmentActivity {
@@ -157,8 +157,8 @@ public class MainActivity extends BaseFragmentActivity {
 //        //UmengUpdateAgent.silentUpdate(this);静默下载更新
 //        UmengUpdateAgent.setUpdateOnlyWifi(false);
 
-//        if(!UserManager.getInstance().isLogined())
-//            UserManager.getInstance().autoLogin();
+        if(!UserManager.getInstance().isLogined())
+            UserManager.getInstance().autoLogin();
 
         mTabHost = (TabHost) findViewById(android.R.id.tabhost);
         mTabHost.setup();
@@ -196,7 +196,6 @@ public class MainActivity extends BaseFragmentActivity {
 
     @Override
     protected void onDestroy() {
-        Config.getInstance().saveConfig();
         mRequestQueue.cancelAll(this);
         EventBus.getDefault().unregister(this);
         super.onDestroy();

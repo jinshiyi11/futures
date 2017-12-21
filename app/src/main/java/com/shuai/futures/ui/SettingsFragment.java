@@ -28,8 +28,9 @@ import com.shuai.futures.utils.CommonUtils;
 import com.shuai.futures.utils.NavigateUtils;
 import com.shuai.futures.utils.Utils;
 
-import de.greenrobot.event.EventBus;
-import de.greenrobot.event.Subscribe;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
 
 public class SettingsFragment extends BaseFragment {
     private Context mContext;

@@ -29,26 +29,20 @@ import java.util.List;
 public class LoginByAccountTask extends BaseTask<TokenInfo> {
     private final static String TAG = LoginByAccountTask.class.getSimpleName();
 
-    public LoginByAccountTask(Context context, int loginType, String account,
+    public LoginByAccountTask(Context context, String account,
                               String password, Listener<TokenInfo> listener,
                               ErrorListener errorListener) {
         super(Method.POST, UrlHelper.getUrl(context, "api/login"),
-                getBody(context, loginType, account, password), listener,
+                getBody(context, account, password), listener,
                 errorListener);
     }
 
-    private static String getBody(Context context, int loginType,
+    private static String getBody(Context context,
                                   String account, String password) {
         List<BasicNameValuePair> params = new LinkedList<BasicNameValuePair>();
-        if (loginType == UserManager.LOGIN_BY_PHONE) {
-            params.add(new BasicNameValuePair("client", "phone"));
-            params.add(new BasicNameValuePair("username", account));
-            params.add(new BasicNameValuePair("password", password));
-        } else {
-            params.add(new BasicNameValuePair("client", "weixin"));
-            params.add(new BasicNameValuePair("uid", account));
-            params.add(new BasicNameValuePair("password", password));
-        }
+        params.add(new BasicNameValuePair("client", "phone"));
+        params.add(new BasicNameValuePair("username", account));
+        params.add(new BasicNameValuePair("password", password));
 
         UrlHelper.addCommonParameters(context, params);
         String body = URLEncodedUtils.format(params, "UTF-8");
